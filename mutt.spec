@@ -3,7 +3,7 @@ Name: mutt
 %define uversion 0.9
 Version: 1.4.2.1
 Release: 2
-Serial: 5
+Epoch: 5
 License: GPL
 Group: Applications/Internet
 Source: ftp://ftp.mutt.org/pub/mutt/mutt-%{version}i.tar.gz
