@@ -1,13 +1,12 @@
 Summary: A text mode mail user agent.
 Name: mutt
-%define pversion 1.2.5
 %define uversion 0.9
-Version: %{pversion}i
-Release: 17
-Serial: 4
+Version: 1.2.5.1
+Release: 1
+Serial: 5
 Copyright: GPL
 Group: Applications/Internet
-Source: ftp://ftp.mutt.org/pub/mutt/mutt-%{pversion}i.tar.gz
+Source: ftp://ftp.mutt.org/pub/mutt/mutt-%{version}.tar.gz
 Source2: ftp://ftp.mutt.org/pub/mutt/contrib/urlview-%{uversion}.tar.gz
 Source1: mutt_ldap_query
 Source3: mutt-colors
@@ -24,7 +23,7 @@ Url: http://www.mutt.org/
 Requires: slang >= 0.99.38, smtpdaemon, webclient
 Obsoletes: urlview
 Provides: urlview
-Buildroot: %{_tmppath}/mutt-root
+Buildroot: %{_tmppath}/%{name}-%{version}-%{release}-root
 Conflicts: mutt-us
 Provides: mutt-i
 %{!?nossl:BuildPrereq: openssl-devel}
@@ -32,15 +31,15 @@ Provides: mutt-i
 BuildPrereq: /usr/sbin/sendmail slang-devel
 
 %description
-Mutt is a text mode mail user agent. Mutt supports color, threading,
+Mutt is a text-mode mail user agent. Mutt supports color, threading,
 arbitrary key remapping, and a lot of customization.
 
-You should install mutt if you've used mutt in the past and you prefer
-it, or if you're new to mail programs and you haven't decided which
-one you're going to use.
+You should install mutt if you have used it in the past and you prefer
+it, or if you are new to mail programs and have not decided which one
+you are going to use.
 
 %prep
-%setup -n mutt-%{pversion} -q -a 2
+%setup -n mutt-%{version} -q -a 2
 %patch0 -p1 -b .nosetgid
 %patch1 -p1 -b .default
 %patch4 -p1 -b .md5-argh
@@ -54,7 +53,7 @@ install -m644 %{SOURCE1} mutt_ldap_query
 
 %build
 export -n LINGUAS
-CFLAGS="$RPM_OPT_FLAGS -g" ./prepare --prefix=%{_prefix} \
+CFLAGS="$RPM_OPT_FLAGS" ./prepare --prefix=%{_prefix} \
 	--with-sharedir=/etc --sysconfdir=/etc \
 	--with-docdir=%{_docdir}/mutt-%{version} \
 	--with-mandir=%{_mandir} \
@@ -136,6 +135,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man5/muttrc.*
 
 %changelog
+* Tue Jan  1 2002 Bill Nottingham <notting@redhat.com>
+- update to 1.2.5.1
+
 * Mon Jul 23 2001 Bill Nottingham <notting@redhat.com>
 - don't explictly require krb5-libs, etc.; that's what find-requires is for
   (#49780, sort of)
