@@ -3,7 +3,7 @@ Name: mutt
 %define pversion 1.2.5
 %define uversion 0.9
 Version: %{pversion}i
-Release: 16
+Release: 17
 Serial: 4
 Copyright: GPL
 Group: Applications/Internet
@@ -27,9 +27,7 @@ Provides: urlview
 Buildroot: %{_tmppath}/mutt-root
 Conflicts: mutt-us
 Provides: mutt-i
-%{!?nossl:Requires: krb5-libs}
 %{!?nossl:BuildPrereq: openssl-devel}
-%{!?nokerberos:Requires: krb5-libs}
 %{!?nokerberos:BuildPrereq: krb5-devel}
 BuildPrereq: /usr/sbin/sendmail slang-devel
 
@@ -138,6 +136,10 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man5/muttrc.*
 
 %changelog
+* Mon Jul 23 2001 Bill Nottingham <notting@redhat.com>
+- don't explictly require krb5-libs, etc.; that's what find-requires is for
+  (#49780, sort of)
+
 * Sat Jul 21 2001 Tim Powers <timp@redhat.com>
 - no more applnk entries, it's cluttering our menus
 
