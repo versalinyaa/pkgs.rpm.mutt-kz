@@ -2,7 +2,7 @@ Summary: A text mode mail user agent.
 Name: mutt
 %define uversion 0.9
 Version: 1.4.2.1
-Release: 1
+Release: 2
 Serial: 5
 License: GPL
 Group: Applications/Internet
@@ -147,6 +147,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man5/muttrc.*
 
 %changelog
+* Mon Mar  7 2005 Bill Nottingham <notting@redhat.com> 5:1.4.2.1-2
+- rebuild against new openssl
+
 * Thu Jan 27 2005 Bill Nottingham <notting@redhat.com> 5:1.4.2.1-1
 - update to 1.4.2.1 (#141007, <moritz@barsnick.net>)
 - include a /etc/Muttrc.local for site config (#123109)
