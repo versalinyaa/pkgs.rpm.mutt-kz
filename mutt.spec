@@ -2,7 +2,7 @@ Summary: A text mode mail user agent.
 Name: mutt
 %define pversion 1.2.5
 Version: %{pversion}i
-Release: 9
+Release: 10
 Serial: 4
 Copyright: GPL
 Group: Applications/Internet
@@ -12,6 +12,8 @@ Patch0: mutt-nosetgid.patch
 Patch1: mutt-default.patch
 Patch4: mutt-md5.patch
 Patch5: mutt-1.2.5-imap.patch
+Patch6: mutt-1.2-hangul.patch
+Patch7: mutt-1.1-default.patch
 Url: http://www.mutt.org/
 Requires: slang >= 0.99.38, smtpdaemon, urlview
 Buildroot: %{_tmppath}/mutt-root
@@ -37,6 +39,8 @@ one you're going to use.
 %patch1 -p1 -b .default
 %patch4 -p1 -b .md5-argh
 %patch5 -p1 -b .imap
+%patch6 -p1 -b .hangul
+%patch7 -p1 -b .default1
 install -m644 %{SOURCE1} mutt_ldap_query
 
 %build
@@ -105,6 +109,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man5/muttrc.*
 
 %changelog
+* Tue May 23 2001 Leon Ho <llch@redhat.com>
+Patched to support hangul (Korean)
+
 * Fri Mar  2 2001 Nalin Dahyabhai <nalin@redhat.com>
 - rebuild in new environment
 
