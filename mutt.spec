@@ -80,7 +80,7 @@ CFLAGS="$RPM_OPT_FLAGS" ./configure --prefix=%{_prefix} \
 %{!?nossl:--with-ssl} \
 %{!?nokerberos:--with-gss} \
 	--disable-warnings --with-ncursesw --disable-domain \
-	--disable-flock --enable-fcntl --enable-debug
+	--disable-flock --enable-fcntl
 make
 
 cd urlview-%{uversion}
