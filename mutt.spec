@@ -2,7 +2,7 @@ Summary: A text mode mail user agent.
 Name: mutt
 %define uversion 0.9
 Version: 1.4.1
-Release: 4
+Release: 6
 Serial: 5
 License: GPL
 Group: Applications/Internet
@@ -16,6 +16,7 @@ Patch2: mutt-1.2.5-muttbug-tmp.patch
 Patch3: mutt-1.2.5.1-autosplat.patch
 Patch4: mutt-1.4.1-muttrc.patch
 Patch5: mutt-sasl.patch
+Patch6: mutt-1.4.1-menu.patch
 Patch10: urlview-0.9-default.patch
 Patch11: urlview.diff
 Url: http://www.mutt.org/
@@ -54,6 +55,8 @@ you are going to use.
 %patch4 -p1 -b .https
 # fix auth to windows KDCs (#98662)
 %patch5 -p1 -b .sasl
+# fix menu padding code (CAN-2004-0078)
+%patch6 -p0 -b .menu
 %patch10 -p0 -b .default
 %patch11 -p0 -b .build
 install -m644 %{SOURCE1} mutt_ldap_query
@@ -137,6 +140,12 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man5/muttrc.*
 
 %changelog
+* Fri Feb 13 2004 Elliot Lee <sopwith@redhat.com>
+- rebuilt
+
+* Tue Jan 27 2004 Bill Nottingham <notting@redhat.com> 5:1.4.1-5
+- add patch to fix menu padding (CAN-2004-0078, #109317)
+
 * Mon Aug 18 2003 Bill Nottingham <notting@redhat.com> 5:1.4.1-4
 - rebuild against ncursesw
 
