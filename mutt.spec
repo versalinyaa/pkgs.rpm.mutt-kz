@@ -1,22 +1,19 @@
 Summary: A text mode mail user agent.
 Name: mutt
 %define uversion 0.9
-Version: 1.2.5.1
-Release: 1
+Version: 1.4
+Release: 3
 Serial: 5
-Copyright: GPL
+License: GPL
 Group: Applications/Internet
-Source: ftp://ftp.mutt.org/pub/mutt/mutt-%{version}.tar.gz
+Source: ftp://ftp.mutt.org/pub/mutt/mutt-%{version}i.tar.gz
 Source2: ftp://ftp.mutt.org/pub/mutt/contrib/urlview-%{uversion}.tar.gz
 Source1: mutt_ldap_query
 Source3: mutt-colors
-Patch0: mutt-nosetgid.patch
+Patch0: mutt-1.4-nosetgid.patch
 Patch1: mutt-default.patch
-Patch4: mutt-md5.patch
-Patch5: mutt-1.2.5-imap.patch
-Patch6: mutt-1.2.5-muttbug-tmp.patch
-Patch7: mutt-1.2.5-gssapi-autoconf.patch
-Patch8: mutt-1.2.5i-man.patch
+Patch2: mutt-1.2.5-muttbug-tmp.patch
+Patch3: mutt-1.2.5.1-autosplat.patch
 Patch10: urlview-0.9-default.patch
 Patch11: urlview.diff
 Url: http://www.mutt.org/
@@ -28,7 +25,7 @@ Conflicts: mutt-us
 Provides: mutt-i
 %{!?nossl:BuildPrereq: openssl-devel}
 %{!?nokerberos:BuildPrereq: krb5-devel}
-BuildPrereq: /usr/sbin/sendmail slang-devel
+BuildPrereq: /usr/sbin/sendmail slang-devel /usr/bin/autoconf-2.13 /usr/bin/automake-1.4
 
 %description
 Mutt is a text-mode mail user agent. Mutt supports color, threading,
@@ -40,25 +37,28 @@ you are going to use.
 
 %prep
 %setup -n mutt-%{version} -q -a 2
+# Thou shalt use fcntl, and only fcntl
 %patch0 -p1 -b .nosetgid
+# Something to make default colors work right.
+# fixme: make sure this is still needed
 %patch1 -p1 -b .default
-%patch4 -p1 -b .md5-argh
-%patch5 -p1 -b .imap
-%patch6 -p1 -b .tmp
-%patch7 -p1 -b .auto
-%patch8 -p1 
+# use mktemp -d in muttbug
+%patch2 -p1 -b .tmp
+# versioned automake/autoconf
+%patch3 -p1 -b .autosplat
 %patch10 -p0 -b .default
 %patch11 -p0 -b .build
 install -m644 %{SOURCE1} mutt_ldap_query
 
 %build
 export -n LINGUAS
-CFLAGS="$RPM_OPT_FLAGS" ./prepare --prefix=%{_prefix} \
+CFLAGS="$RPM_OPT_FLAGS" ./configure --prefix=%{_prefix} \
 	--with-sharedir=/etc --sysconfdir=/etc \
 	--with-docdir=%{_docdir}/mutt-%{version} \
 	--with-mandir=%{_mandir} \
 	--with-infodir=%{_infodir} \
 	--enable-pop --enable-imap \
+	--with-sasl \
 %{!?nossl:--with-ssl} \
 %{!?nokerberos:--with-gss=/usr/kerberos} \
 	--disable-warnings --with-slang --disable-domain \
@@ -135,6 +135,24 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man5/muttrc.*
 
 %changelog
+* Fri Jun 14 2002 Bill Nottingham <notting@redhat.com> 1.4-3
+- rebuild against new slang
+
+* Wed May 29 2002 Nalin Dahyabhai <nalin@redhat.com> 1.4-2
+- forcibly enable SSL and GSSAPI support
+
+* Wed May 29 2002 Bill Nottingham <notting@redhat.com> 1.4-1
+- whoa, 1.4.
+
+* Sun May 26 2002 Tim Powers <timp@redhat.com>
+- automated rebuild
+
+* Thu May 16 2002 Bill Nottingham <notting@redhat.com>
+- autoconf fun
+
+* Wed Jan 09 2002 Tim Powers <timp@redhat.com>
+- automated rebuild
+
 * Tue Jan  1 2002 Bill Nottingham <notting@redhat.com>
 - update to 1.2.5.1
 
