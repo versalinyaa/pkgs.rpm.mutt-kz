@@ -2,7 +2,7 @@ Summary: A text mode mail user agent.
 Name: mutt
 %define uversion 0.9
 Version: 1.4.1
-Release: 1
+Release: 3.3
 Serial: 5
 License: GPL
 Group: Applications/Internet
@@ -15,6 +15,8 @@ Patch1: mutt-default.patch
 Patch2: mutt-1.2.5-muttbug-tmp.patch
 Patch3: mutt-1.2.5.1-autosplat.patch
 Patch4: mutt-1.4.1-muttrc.patch
+Patch5: mutt-sasl.patch
+Patch6: mutt-1.4.1-menu.patch
 Patch10: urlview-0.9-default.patch
 Patch11: urlview.diff
 Url: http://www.mutt.org/
@@ -26,6 +28,7 @@ Conflicts: mutt-us
 Provides: mutt-i
 %{!?nossl:BuildPrereq: openssl-devel}
 %{!?nokerberos:BuildPrereq: krb5-devel}
+BuildPrereq: cyrus-sasl-devel
 BuildPrereq: /usr/sbin/sendmail slang-devel /usr/bin/autoconf-2.13 /usr/bin/automake-1.4
 
 %description
@@ -49,6 +52,10 @@ you are going to use.
 %patch3 -p1 -b .autosplat
 # make it recognize https urls too
 %patch4 -p1 -b .https
+# fix auth to windows KDCs (#98662)
+%patch5 -p1 -b .sasl
+# fix menu padding code (CAN-2004-0078)
+%patch6 -p0 -b .menu
 %patch10 -p0 -b .default
 %patch11 -p0 -b .build
 install -m644 %{SOURCE1} mutt_ldap_query
@@ -132,6 +139,15 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man5/muttrc.*
 
 %changelog
+* Tue Jan 27 2004 Bill Nottingham <notting@redhat.com> 5:1.4.1-3.3
+- add patch to fix menu padding (CAN-2004-0078, #109317)
+
+* Mon Jul  7 2003 Bill Nottingham <notting@redhat.com> 5:1.4.1-3
+- fix auth to windows KDCs (#98662)
+
+* Wed Jun 04 2003 Elliot Lee <sopwith@redhat.com>
+- rebuilt
+
 * Wed Mar 19 2003 Bill Nottingham <notting@redhat.com> 5:1.4.1-1
 - update to 1.4.1, fixes buffer overflow in IMAP code
 
