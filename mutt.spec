@@ -1,8 +1,10 @@
+%define enable_japanese 1
+
 Summary: A text mode mail user agent.
 Name: mutt
 %define pversion 1.2.5
 Version: %{pversion}i
-Release: 3
+Release: 3j1
 Serial: 4
 Copyright: GPL
 Group: Applications/Internet
@@ -10,8 +12,16 @@ Source: ftp://ftp.mutt.org/pub/mutt/mutt-%{pversion}i.tar.gz
 Patch0: mutt-nosetgid.patch
 Patch1: mutt-default.patch
 Patch4: mutt-md5.patch
+# Japanese patch
+Patch10: mutt-1.2.4i-jp0-diff.gz
+Patch11: muttlib.c.diff
+Patch12: mutt-1.2.5-lib-jp.diff
 Url: http://www.mutt.org/
+%if %{enable_japanese}
+Requires: slang-j >= 1.4.0, smtpdaemon, urlview
+%else
 Requires: slang >= 0.99.38, smtpdaemon, urlview
+%endif
 BuildPrereq: openssl-devel
 Buildroot: %{_tmppath}/mutt-root
 Conflicts: mutt-us
@@ -32,10 +42,21 @@ one you're going to use.
 %patch0 -p1 -b .nosetgid
 %patch1 -p1 -b .default
 %patch4 -p1 -b .md5-argh
+%if %{enable_japanese}
+%patch10 -p1 -b .jp1
+%patch11 -p0 -b .jp2
+%patch12 -p1 -b .jp3
+%endif
 
 %build
 export -n LINGUAS
+%if %{enable_japanese}
+CFLAGS="$RPM_OPT_FLAGS -I/usr/include/slang-j" ./prepare \
+	--prefix=%{_prefix} \
+	--enable-locales-fix \
+%else
 CFLAGS="$RPM_OPT_FLAGS" ./prepare --prefix=%{_prefix} \
+%endif
 	--with-sharedir=/etc --sysconfdir=/etc \
 	--with-docdir=%{_docdir}/mutt-%{version} \
 	--with-mandir=%{_mandir} \
@@ -97,6 +118,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_prefix}/share/locale/*/LC_MESSAGES/mutt.mo
 
 %changelog
+* Thu Aug 31 2000 Yukihiro Nakai <ynakai@redhat.com>
+- Add Japanese patch from Kondara MNU/Linux
+
 * Thu Aug 24 2000 Nalin Dahyabhai <nalin@redhat.com>
 - rebuild in new environment
 - force flock() off and fcntl() on in case defaults change
