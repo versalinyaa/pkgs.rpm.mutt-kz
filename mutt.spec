@@ -2,7 +2,7 @@ Summary: A text mode mail user agent.
 Name: mutt
 %define uversion 0.9
 Version: 1.4.1
-Release: 7
+Release: 8
 Serial: 5
 License: GPL
 Group: Applications/Internet
@@ -142,6 +142,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man5/muttrc.*
 
 %changelog
+* Tue Jun 15 2004 Elliot Lee <sopwith@redhat.com>
+- rebuilt
+
 * Tue Jun  8 2004 Bill Nottingham <notting@redhat.com> 5:1.4.1-7
 - link urlview against ncursesw (fixes #125530, indirectly)
 
