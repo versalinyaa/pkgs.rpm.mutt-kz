@@ -1,21 +1,29 @@
 Summary: A text mode mail user agent.
 Name: mutt
 %define pversion 1.2.5
+%define uversion 0.9
 Version: %{pversion}i
-Release: 10
+Release: 16
 Serial: 4
 Copyright: GPL
 Group: Applications/Internet
 Source: ftp://ftp.mutt.org/pub/mutt/mutt-%{pversion}i.tar.gz
+Source2: ftp://ftp.mutt.org/pub/mutt/contrib/urlview-%{uversion}.tar.gz
 Source1: mutt_ldap_query
+Source3: mutt-colors
 Patch0: mutt-nosetgid.patch
 Patch1: mutt-default.patch
 Patch4: mutt-md5.patch
 Patch5: mutt-1.2.5-imap.patch
-Patch6: mutt-1.2-hangul.patch
-Patch7: mutt-1.1-default.patch
+Patch6: mutt-1.2.5-muttbug-tmp.patch
+Patch7: mutt-1.2.5-gssapi-autoconf.patch
+Patch8: mutt-1.2.5i-man.patch
+Patch10: urlview-0.9-default.patch
+Patch11: urlview.diff
 Url: http://www.mutt.org/
-Requires: slang >= 0.99.38, smtpdaemon, urlview
+Requires: slang >= 0.99.38, smtpdaemon, webclient
+Obsoletes: urlview
+Provides: urlview
 Buildroot: %{_tmppath}/mutt-root
 Conflicts: mutt-us
 Provides: mutt-i
@@ -23,7 +31,7 @@ Provides: mutt-i
 %{!?nossl:BuildPrereq: openssl-devel}
 %{!?nokerberos:Requires: krb5-libs}
 %{!?nokerberos:BuildPrereq: krb5-devel}
-BuildPrereq: /usr/sbin/sendmail
+BuildPrereq: /usr/sbin/sendmail slang-devel
 
 %description
 Mutt is a text mode mail user agent. Mutt supports color, threading,
@@ -34,13 +42,16 @@ it, or if you're new to mail programs and you haven't decided which
 one you're going to use.
 
 %prep
-%setup -n mutt-%{pversion} -q
+%setup -n mutt-%{pversion} -q -a 2
 %patch0 -p1 -b .nosetgid
 %patch1 -p1 -b .default
 %patch4 -p1 -b .md5-argh
 %patch5 -p1 -b .imap
-%patch6 -p1 -b .hangul
-%patch7 -p1 -b .default1
+%patch6 -p1 -b .tmp
+%patch7 -p1 -b .auto
+%patch8 -p1 
+%patch10 -p0 -b .default
+%patch11 -p0 -b .build
 install -m644 %{SOURCE1} mutt_ldap_query
 
 %build
@@ -56,6 +67,11 @@ CFLAGS="$RPM_OPT_FLAGS -g" ./prepare --prefix=%{_prefix} \
 	--disable-warnings --with-slang --disable-domain \
 	--disable-flock --enable-fcntl
 make
+
+cd urlview-%{uversion}
+%configure --with-slang
+make
+
 %install
 rm -rf $RPM_BUILD_ROOT
 %makeinstall sharedir=$RPM_BUILD_ROOT/etc \
@@ -80,7 +96,8 @@ EOF
 # we like GPG here
 cat contrib/gpg.rc >> \
 	$RPM_BUILD_ROOT/etc/Muttrc
-
+grep -5 "^color" contrib/sample.muttrc >> \
+	$RPM_BUILD_ROOT/etc/Muttrc
 # and we use aspell
 
 cat >> $RPM_BUILD_ROOT/etc/Muttrc <<EOF
@@ -88,6 +105,14 @@ cat >> $RPM_BUILD_ROOT/etc/Muttrc <<EOF
 set ispell="/usr/bin/aspell --mode=email check"
 
 EOF
+
+cd urlview-%{uversion}
+%makeinstall
+install -m 755 url_handler.sh $RPM_BUILD_ROOT%{_bindir}/url_handler.sh
+mkdir -p doc/urlview
+cp AUTHORS ChangeLog COPYING INSTALL README sample.urlview urlview.sgml \
+  doc/urlview
+cd ..
 
 %find_lang %{name}
 
@@ -97,20 +122,42 @@ rm -rf $RPM_BUILD_ROOT
 %files -f %{name}.lang
 %defattr(-,root,root)
 %config /etc/Muttrc
-%config (missingok) /etc/X11/applnk/Internet/mutt.desktop
+#%config (missingok) /etc/X11/applnk/Internet/mutt.desktop
 %doc doc/*.txt
 %doc contrib/*.rc README* contrib/sample.* NEWS
 %doc COPYRIGHT doc/manual.txt contrib/language* mime.types mutt_ldap_query
+%doc urlview-%{uversion}/doc/urlview
 %{_bindir}/mutt
 %{_bindir}/muttbug
 %{_bindir}/pgpring
 %{_bindir}/pgpewrap
+%{_bindir}/urlview
+%{_bindir}/url_handler.sh
+%{_mandir}/man1/urlview.*
 %{_mandir}/man1/mutt.*
 %{_mandir}/man5/muttrc.*
 
 %changelog
-* Tue May 23 2001 Leon Ho <llch@redhat.com>
-Patched to support hangul (Korean)
+* Sat Jul 21 2001 Tim Powers <timp@redhat.com>
+- no more applnk entries, it's cluttering our menus
+
+* Fri Jul 20 2001 Bill Nottingham <notting@redhat.com>
+- add slang-devel to buildprereqs (#49531)
+
+* Mon Jun 11 2001 Bill Nottingham <notting@redhat.com>
+- add some sample color definitions (#19471)
+
+* Thu May 24 2001 Bill Nottingham <notting@redhat.com>
+- fix typo in muttrc.man (#41610)
+
+* Mon May 14 2001 Bill Nottingham <notting@redhat.com>
+- use mktemp in muttbug
+
+* Wed May  2 2001 Nalin Dahyabhai <nalin@redhat.com>
+- require webclient, not weclient
+
+* Wed May  2 2001 Bill Nottingham <notting@redhat.com>
+- build urlview here
 
 * Fri Mar  2 2001 Nalin Dahyabhai <nalin@redhat.com>
 - rebuild in new environment
