@@ -2,7 +2,7 @@ Summary: A text mode mail user agent.
 Name: mutt
 %define uversion 0.9
 Version: 1.4.1
-Release: 9
+Release: 10
 Serial: 5
 License: GPL
 Group: Applications/Internet
@@ -21,6 +21,8 @@ Patch8: mutt-1.4-sasl2.patch
 Patch10: urlview-0.9-default.patch
 Patch11: urlview.diff
 Patch12: urlview-0.9-ncursesw.patch
+Patch13: mutt-1.4.1-plain.patch
+Patch14: mutt-1.4.1-rfc1734.patch
 Url: http://www.mutt.org/
 Requires: smtpdaemon, webclient, mailcap, gettext
 Obsoletes: urlview
@@ -62,6 +64,8 @@ you are going to use.
 %patch10 -p0 -b .default
 %patch11 -p0 -b .build
 %patch12 -p0 -b .ncursesw
+%patch13 -p1 -b .plain
+%patch14 -p1 -b .rfc1734
 install -m644 %{SOURCE1} mutt_ldap_query
 
 %build
@@ -76,7 +80,7 @@ CFLAGS="$RPM_OPT_FLAGS" ./configure --prefix=%{_prefix} \
 %{!?nossl:--with-ssl} \
 %{!?nokerberos:--with-gss} \
 	--disable-warnings --with-ncursesw --disable-domain \
-	--disable-flock --enable-fcntl
+	--disable-flock --enable-fcntl --enable-debug
 make
 
 cd urlview-%{uversion}
@@ -143,6 +147,12 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man5/muttrc.*
 
 %changelog
+* Wed Sep 15 2004 Nalin Dahyabhai <nalin@redhat.com> 5:1.4.1-10
+- expect the server to prompt for additional auth data if we have some to
+  send (#129961, upstream #1845)
+- use "pop" as the service name instead of "pop-3" when using SASL for POP,
+  per rfc1734
+
 * Fri Aug 13 2004 Bill Nottingham <notting@redhat.com> 5:1.4.1-9
 - set write_bcc to no by default (since we ship exim)
 - build against sasl2 (#126724)
