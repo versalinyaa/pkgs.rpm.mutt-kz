@@ -2,7 +2,7 @@ Summary: A text mode mail user agent.
 Name: mutt
 %define pversion 1.2.5
 Version: %{pversion}i
-Release: 2
+Release: 3
 Serial: 4
 Copyright: GPL
 Group: Applications/Internet
@@ -12,6 +12,7 @@ Patch1: mutt-default.patch
 Patch4: mutt-md5.patch
 Url: http://www.mutt.org/
 Requires: slang >= 0.99.38, smtpdaemon, urlview
+BuildPrereq: openssl-devel
 Buildroot: %{_tmppath}/mutt-root
 Conflicts: mutt-us
 Provides: mutt-i
@@ -40,8 +41,10 @@ CFLAGS="$RPM_OPT_FLAGS" ./prepare --prefix=%{_prefix} \
 	--with-mandir=%{_mandir} \
 	--with-infodir=%{_infodir} \
 	--enable-pop --enable-imap \
+	--with-ssl \
 %{!?nokerberos:--with-gss=/usr/kerberos} \
-	--disable-warnings --with-slang --disable-domain
+	--disable-warnings --with-slang --disable-domain \
+	--disable-flock --enable-fcntl
 make
 %install
 rm -rf $RPM_BUILD_ROOT
@@ -94,6 +97,13 @@ rm -rf $RPM_BUILD_ROOT
 %{_prefix}/share/locale/*/LC_MESSAGES/mutt.mo
 
 %changelog
+* Thu Aug 24 2000 Nalin Dahyabhai <nalin@redhat.com>
+- rebuild in new environment
+- force flock() off and fcntl() on in case defaults change
+
+* Tue Aug  8 2000 Nalin Dahyabhai <nalin@redhat.com>
+- enable SSL support
+
 * Fri Aug  4 2000 Bill Nottingham <notting@redhat.com>
 - add translation to desktop entry
 
