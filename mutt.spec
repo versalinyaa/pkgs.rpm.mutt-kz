@@ -2,7 +2,7 @@ Summary: A text mode mail user agent.
 Name: mutt
 %define uversion 0.9
 Version: 1.4
-Release: 4
+Release: 10
 Serial: 5
 License: GPL
 Group: Applications/Internet
@@ -17,7 +17,7 @@ Patch3: mutt-1.2.5.1-autosplat.patch
 Patch10: urlview-0.9-default.patch
 Patch11: urlview.diff
 Url: http://www.mutt.org/
-Requires: slang >= 0.99.38, smtpdaemon, webclient
+Requires: slang >= 0.99.38, smtpdaemon, webclient, mailcap
 Obsoletes: urlview
 Provides: urlview
 Buildroot: %{_tmppath}/%{name}-%{version}-%{release}-root
@@ -111,6 +111,13 @@ cp AUTHORS ChangeLog COPYING INSTALL README sample.urlview urlview.sgml \
   doc/urlview
 cd ..
 
+# remove unpackaged files from the buildroot
+rm -rf $RPM_BUILD_ROOT%{_sysconfdir}/X11
+rm -f $RPM_BUILD_ROOT%{_sysconfdir}/mime.types
+rm -f $RPM_BUILD_ROOT%{_bindir}/muttbug
+rm -f $RPM_BUILD_ROOT%{_mandir}/man1/{muttbug.1,mutt_dotlock.1}*
+rm -f $RPM_BUILD_ROOT%{_mandir}/man5/mbox.5*
+
 %find_lang %{name}
 
 %clean
@@ -125,16 +132,36 @@ rm -rf $RPM_BUILD_ROOT
 %doc COPYRIGHT doc/manual.txt contrib/language* mime.types mutt_ldap_query
 %doc urlview-%{uversion}/doc/urlview
 %{_bindir}/mutt
-%{_bindir}/muttbug
+%{_bindir}/flea
 %{_bindir}/pgpring
 %{_bindir}/pgpewrap
 %{_bindir}/urlview
 %{_bindir}/url_handler.sh
 %{_mandir}/man1/urlview.*
 %{_mandir}/man1/mutt.*
+%{_mandir}/man1/flea.*
 %{_mandir}/man5/muttrc.*
 
 %changelog
+* Wed Jan 22 2003 Tim Powers <timp@redhat.com>
+- rebuilt
+
+* Mon Jan 20 2003 Bill Nottingham <notting@redhat.com> 5:1.4-9
+- add mailcap requires
+- change urlview to htmlview as default browser
+
+* Fri Jan 17 2003 Florian La Roche <Florian.LaRoche@redhat.de>
+- change urlview to mozilla as default browser
+
+* Tue Jan 7 2003 Nalin Dahyabhai <nalin@redhat.com> 5:1.4-7
+- rebuild
+
+* Mon Dec 2 2002 Bill Nottingham <notting@redhat.com> 5:1.4-6
+- ship flea
+
+* Fri Nov 29 2002 Tim Powers <timp@redhat.com> 5:1.4-5
+- remove unpackaged files from the buildroot
+
 * Fri Jun 21 2002 Tim Powers <timp@redhat.com>
 - automated rebuild
 
