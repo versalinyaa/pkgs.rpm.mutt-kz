@@ -1,8 +1,8 @@
 Summary: A text mode mail user agent.
 Name: mutt
 %define uversion 0.9
-Version: 1.4.1
-Release: 10
+Version: 1.4.2.1
+Release: 1
 Serial: 5
 License: GPL
 Group: Applications/Internet
@@ -15,7 +15,6 @@ Patch1: mutt-default.patch
 Patch2: mutt-1.2.5-muttbug-tmp.patch
 Patch4: mutt-1.4.1-muttrc.patch
 Patch5: mutt-sasl.patch
-Patch6: mutt-1.4.1-menu.patch
 Patch7: mutt-1.4.1-bcc.patch
 Patch8: mutt-1.4-sasl2.patch
 Patch10: urlview-0.9-default.patch
@@ -57,8 +56,6 @@ you are going to use.
 %patch4 -p1 -b .https
 # fix auth to windows KDCs (#98662)
 %patch5 -p1 -b .sasl
-# fix menu padding code (CAN-2004-0078)
-%patch6 -p0 -b .menu
 %patch7 -p1 -b .bcc
 %patch8 -p1 -b .sasl2
 %patch10 -p0 -b .default
@@ -105,8 +102,10 @@ grep -5 "^color" contrib/sample.muttrc >> \
 cat >> $RPM_BUILD_ROOT/etc/Muttrc <<EOF
 # use aspell
 set ispell="/usr/bin/aspell --mode=email check"
-
+source /etc/Muttrc.local
 EOF
+
+touch $RPM_BUILD_ROOT/etc/Muttrc.local
 
 cd urlview-%{uversion}
 %makeinstall
@@ -131,6 +130,7 @@ rm -rf $RPM_BUILD_ROOT
 %files -f %{name}.lang
 %defattr(-,root,root)
 %config(noreplace) /etc/Muttrc
+%config(noreplace) /etc/Muttrc.local
 %doc doc/*.txt
 %doc contrib/*.rc README* contrib/sample.* NEWS
 %doc COPYRIGHT doc/manual.txt contrib/language* mime.types mutt_ldap_query
@@ -147,6 +147,12 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man5/muttrc.*
 
 %changelog
+* Thu Jan 27 2005 Bill Nottingham <notting@redhat.com> 5:1.4.2.1-1
+- update to 1.4.2.1 (#141007, <moritz@barsnick.net>)
+- include a /etc/Muttrc.local for site config (#123109)
+- add <f2> as a additional help key for terminals that use <f1> internally
+  (#139277)
+
 * Wed Sep 15 2004 Nalin Dahyabhai <nalin@redhat.com> 5:1.4.1-10
 - expect the server to prompt for additional auth data if we have some to
   send (#129961, upstream #1845)
