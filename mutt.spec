@@ -22,6 +22,7 @@ Patch11: urlview.diff
 Patch12: urlview-0.9-ncursesw.patch
 Patch13: mutt-1.4.1-plain.patch
 Patch14: mutt-1.4.1-rfc1734.patch
+Patch15: mutt-1.4.2.1-gcc4.patch
 Url: http://www.mutt.org/
 Requires: smtpdaemon, webclient, mailcap, gettext
 Obsoletes: urlview
@@ -63,6 +64,8 @@ you are going to use.
 %patch12 -p0 -b .ncursesw
 %patch13 -p1 -b .plain
 %patch14 -p1 -b .rfc1734
+%patch15 -p1 -b .gcc4
+
 install -m644 %{SOURCE1} mutt_ldap_query
 
 %build
@@ -149,6 +152,7 @@ rm -rf $RPM_BUILD_ROOT
 %changelog
 * Mon Mar  7 2005 Bill Nottingham <notting@redhat.com> 5:1.4.2.1-2
 - rebuild against new openssl
+- fix build with gcc4
 
 * Thu Jan 27 2005 Bill Nottingham <notting@redhat.com> 5:1.4.2.1-1
 - update to 1.4.2.1 (#141007, <moritz@barsnick.net>)
