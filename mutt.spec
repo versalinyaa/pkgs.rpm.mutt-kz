@@ -2,7 +2,7 @@ Summary: A text mode mail user agent.
 Name: mutt
 %define uversion 0.9
 Version: 1.4.1
-Release: 6
+Release: 7
 Serial: 5
 License: GPL
 Group: Applications/Internet
@@ -19,8 +19,9 @@ Patch5: mutt-sasl.patch
 Patch6: mutt-1.4.1-menu.patch
 Patch10: urlview-0.9-default.patch
 Patch11: urlview.diff
+Patch12: urlview-0.9-ncursesw.patch
 Url: http://www.mutt.org/
-Requires: slang >= 0.99.38, smtpdaemon, webclient, mailcap, gettext
+Requires: smtpdaemon, webclient, mailcap, gettext
 Obsoletes: urlview
 Provides: urlview
 Buildroot: %{_tmppath}/%{name}-%{version}-%{release}-root
@@ -29,7 +30,7 @@ Provides: mutt-i
 %{!?nossl:BuildPrereq: openssl-devel}
 %{!?nokerberos:BuildPrereq: krb5-devel}
 BuildPrereq: cyrus-sasl-devel
-BuildPrereq: /usr/sbin/sendmail /usr/bin/autoconf-2.13 /usr/bin/automake-1.4
+BuildPrereq: /usr/sbin/sendmail
 BuildPrereq: ncurses-devel >= 5.3-5
 
 %description
@@ -59,6 +60,7 @@ you are going to use.
 %patch6 -p0 -b .menu
 %patch10 -p0 -b .default
 %patch11 -p0 -b .build
+%patch12 -p0 -b .ncursesw
 install -m644 %{SOURCE1} mutt_ldap_query
 
 %build
@@ -77,7 +79,7 @@ CFLAGS="$RPM_OPT_FLAGS" ./configure --prefix=%{_prefix} \
 make
 
 cd urlview-%{uversion}
-%configure --with-slang
+%configure --with-ncursesw
 make
 
 %install
@@ -140,6 +142,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man5/muttrc.*
 
 %changelog
+* Tue Jun  8 2004 Bill Nottingham <notting@redhat.com> 5:1.4.1-7
+- link urlview against ncursesw (fixes #125530, indirectly)
+
 * Fri Feb 13 2004 Elliot Lee <sopwith@redhat.com>
 - rebuilt
 
