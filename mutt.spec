@@ -1,8 +1,8 @@
 Summary: A text mode mail user agent.
 Name: mutt
 %define uversion 0.9
-Version: 1.4
-Release: 10
+Version: 1.4.1
+Release: 1
 Serial: 5
 License: GPL
 Group: Applications/Internet
@@ -14,10 +14,11 @@ Patch0: mutt-1.4-nosetgid.patch
 Patch1: mutt-default.patch
 Patch2: mutt-1.2.5-muttbug-tmp.patch
 Patch3: mutt-1.2.5.1-autosplat.patch
+Patch4: mutt-1.4.1-muttrc.patch
 Patch10: urlview-0.9-default.patch
 Patch11: urlview.diff
 Url: http://www.mutt.org/
-Requires: slang >= 0.99.38, smtpdaemon, webclient, mailcap
+Requires: slang >= 0.99.38, smtpdaemon, webclient, mailcap, gettext
 Obsoletes: urlview
 Provides: urlview
 Buildroot: %{_tmppath}/%{name}-%{version}-%{release}-root
@@ -46,6 +47,8 @@ you are going to use.
 %patch2 -p1 -b .tmp
 # versioned automake/autoconf
 %patch3 -p1 -b .autosplat
+# make it recognize https urls too
+%patch4 -p1 -b .https
 %patch10 -p0 -b .default
 %patch11 -p0 -b .build
 install -m644 %{SOURCE1} mutt_ldap_query
@@ -76,19 +79,6 @@ rm -rf $RPM_BUILD_ROOT
   docdir=$RPM_BUILD_ROOT%{_docdir}/mutt-%{version} \
   install
 mkdir -p $RPM_BUILD_ROOT/etc/X11/applnk/Internet
-
-cat > $RPM_BUILD_ROOT/etc/X11/applnk/Internet/mutt.desktop <<EOF
-[Desktop Entry]
-Name=Mutt
-Name[sv]=Mutt
-Type=Application
-Comment=Mail reader
-Comment[sv]=E-postläsare
-Icon=mail2.xpm
-MiniIcon=mini-mail.xpm
-Exec=mutt
-Terminal=true
-EOF
 
 # we like GPG here
 cat contrib/gpg.rc >> \
@@ -126,7 +116,6 @@ rm -rf $RPM_BUILD_ROOT
 %files -f %{name}.lang
 %defattr(-,root,root)
 %config /etc/Muttrc
-#%config (missingok) /etc/X11/applnk/Internet/mutt.desktop
 %doc doc/*.txt
 %doc contrib/*.rc README* contrib/sample.* NEWS
 %doc COPYRIGHT doc/manual.txt contrib/language* mime.types mutt_ldap_query
@@ -143,6 +132,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man5/muttrc.*
 
 %changelog
+* Wed Mar 19 2003 Bill Nottingham <notting@redhat.com> 5:1.4.1-1
+- update to 1.4.1, fixes buffer overflow in IMAP code
+
 * Wed Jan 22 2003 Tim Powers <timp@redhat.com>
 - rebuilt
 
