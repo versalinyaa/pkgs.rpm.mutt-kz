@@ -1,33 +1,27 @@
-%define enable_japanese 1
-
 Summary: A text mode mail user agent.
 Name: mutt
 %define pversion 1.2.5
 Version: %{pversion}i
-Release: 3j1
+Release: 8.8
 Serial: 4
 Copyright: GPL
 Group: Applications/Internet
 Source: ftp://ftp.mutt.org/pub/mutt/mutt-%{pversion}i.tar.gz
+Source1: mutt_ldap_query
 Patch0: mutt-nosetgid.patch
 Patch1: mutt-default.patch
 Patch4: mutt-md5.patch
-# Japanese patch
-Patch10: mutt-1.2.4i-jp0-diff.gz
-Patch11: muttlib.c.diff
-Patch12: mutt-1.2.5-lib-jp.diff
+Patch5: mutt-1.2.5-imap.patch
 Url: http://www.mutt.org/
-%if %{enable_japanese}
-Requires: slang-j >= 1.4.0, smtpdaemon, urlview
-%else
 Requires: slang >= 0.99.38, smtpdaemon, urlview
-%endif
-BuildPrereq: openssl-devel
 Buildroot: %{_tmppath}/mutt-root
 Conflicts: mutt-us
 Provides: mutt-i
+%{!?nossl:Requires: krb5-libs}
+%{!?nossl:BuildPrereq: openssl-devel}
 %{!?nokerberos:Requires: krb5-libs}
 %{!?nokerberos:BuildPrereq: krb5-devel}
+BuildPrereq: /usr/sbin/sendmail
 
 %description
 Mutt is a text mode mail user agent. Mutt supports color, threading,
@@ -42,27 +36,18 @@ one you're going to use.
 %patch0 -p1 -b .nosetgid
 %patch1 -p1 -b .default
 %patch4 -p1 -b .md5-argh
-%if %{enable_japanese}
-%patch10 -p1 -b .jp1
-%patch11 -p0 -b .jp2
-%patch12 -p1 -b .jp3
-%endif
+%patch5 -p1 -b .imap
+install -m644 %{SOURCE1} mutt_ldap_query
 
 %build
 export -n LINGUAS
-%if %{enable_japanese}
-CFLAGS="$RPM_OPT_FLAGS -I/usr/include/slang-j" ./prepare \
-	--prefix=%{_prefix} \
-	--enable-locales-fix \
-%else
-CFLAGS="$RPM_OPT_FLAGS" ./prepare --prefix=%{_prefix} \
-%endif
+CFLAGS="$RPM_OPT_FLAGS -g" ./prepare --prefix=%{_prefix} \
 	--with-sharedir=/etc --sysconfdir=/etc \
 	--with-docdir=%{_docdir}/mutt-%{version} \
 	--with-mandir=%{_mandir} \
 	--with-infodir=%{_infodir} \
 	--enable-pop --enable-imap \
-	--with-ssl \
+%{!?nossl:--with-ssl} \
 %{!?nokerberos:--with-gss=/usr/kerberos} \
 	--disable-warnings --with-slang --disable-domain \
 	--disable-flock --enable-fcntl
@@ -100,26 +85,56 @@ set ispell="/usr/bin/aspell --mode=email check"
 
 EOF
 
+%find_lang %{name}
+
 %clean
 rm -rf $RPM_BUILD_ROOT
 
-%files
+%files -f %{name}.lang
 %defattr(-,root,root)
 %config /etc/Muttrc
 %config (missingok) /etc/X11/applnk/Internet/mutt.desktop
+%doc doc/*.txt
 %doc contrib/*.rc README* contrib/sample.* NEWS
-%doc COPYRIGHT doc/manual.txt contrib/language* mime.types
+%doc COPYRIGHT doc/manual.txt contrib/language* mime.types mutt_ldap_query
 %{_bindir}/mutt
 %{_bindir}/muttbug
 %{_bindir}/pgpring
 %{_bindir}/pgpewrap
 %{_mandir}/man1/mutt.*
 %{_mandir}/man5/muttrc.*
-%{_prefix}/share/locale/*/LC_MESSAGES/mutt.mo
 
 %changelog
-* Thu Aug 31 2000 Yukihiro Nakai <ynakai@redhat.com>
-- Add Japanese patch from Kondara MNU/Linux
+* Thu Mar 29 2001 Nalin Dahyabhai <nalin@redhat.com>
+- rebuild in new environment
+
+* Fri Mar  9 2001 Bill Nottingham <notting@redhat.com>
+- rebuild for older releases
+
+* Fri Mar  2 2001 Nalin Dahyabhai <nalin@redhat.com>
+- rebuild in new environment
+
+* Tue Feb 13 2001 Bill Nottingham <notting@redhat.com>
+- change buildprereq to /usr/sbin/sendmail (it's what it should have been
+  originally)
+- %langify
+
+* Tue Feb 13 2001 Michael Stefaniuc <mstefani@redhat.com>
+- changed buildprereq to smtpdaemon
+
+* Tue Dec 19 2000 Bill Nottingham <notting@redhat.com>
+- rebuild; it's just broken
+- fix #13196
+- buildprereq sendmail
+
+* Fri Dec 01 2000 Bill Nottingham <notting@redhat.com>
+- rebuild because of broken fileutils
+
+* Fri Nov 10 2000 Nalin Dahyabhai <nalin@redhat.com>
+- include a sample LDAP query script as a doc file
+
+* Mon Nov  6 2000 Nalin Dahyabhai <nalin@redhat.com>
+- patch for imap servers that like to volunteer information after AUTHENTICATE
 
 * Thu Aug 24 2000 Nalin Dahyabhai <nalin@redhat.com>
 - rebuild in new environment
@@ -270,4 +285,4 @@ rm -rf $RPM_BUILD_ROOT
 - Rebuilt to insure all sources were fresh and patches were clean.
 
 * Wed Aug 6 1997 Manoj Kasichainula <manojk@io.com>
- - Initial version for 0.81(e)
+- Initial version for 0.81(e)
