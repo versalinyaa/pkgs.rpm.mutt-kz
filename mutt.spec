@@ -2,7 +2,7 @@ Summary: A text mode mail user agent.
 Name: mutt
 %define uversion 0.9
 Version: 1.4.1
-Release: 8
+Release: 9
 Serial: 5
 License: GPL
 Group: Applications/Internet
@@ -13,10 +13,11 @@ Source3: mutt-colors
 Patch0: mutt-1.4-nosetgid.patch
 Patch1: mutt-default.patch
 Patch2: mutt-1.2.5-muttbug-tmp.patch
-Patch3: mutt-1.2.5.1-autosplat.patch
 Patch4: mutt-1.4.1-muttrc.patch
 Patch5: mutt-sasl.patch
 Patch6: mutt-1.4.1-menu.patch
+Patch7: mutt-1.4.1-bcc.patch
+Patch8: mutt-1.4-sasl2.patch
 Patch10: urlview-0.9-default.patch
 Patch11: urlview.diff
 Patch12: urlview-0.9-ncursesw.patch
@@ -50,14 +51,14 @@ you are going to use.
 %patch1 -p1 -b .default
 # use mktemp -d in muttbug
 %patch2 -p1 -b .tmp
-# versioned automake/autoconf
-%patch3 -p1 -b .autosplat
 # make it recognize https urls too
 %patch4 -p1 -b .https
 # fix auth to windows KDCs (#98662)
 %patch5 -p1 -b .sasl
 # fix menu padding code (CAN-2004-0078)
 %patch6 -p0 -b .menu
+%patch7 -p1 -b .bcc
+%patch8 -p1 -b .sasl2
 %patch10 -p0 -b .default
 %patch11 -p0 -b .build
 %patch12 -p0 -b .ncursesw
@@ -125,7 +126,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %files -f %{name}.lang
 %defattr(-,root,root)
-%config /etc/Muttrc
+%config(noreplace) /etc/Muttrc
 %doc doc/*.txt
 %doc contrib/*.rc README* contrib/sample.* NEWS
 %doc COPYRIGHT doc/manual.txt contrib/language* mime.types mutt_ldap_query
@@ -142,6 +143,13 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man5/muttrc.*
 
 %changelog
+* Fri Aug 13 2004 Bill Nottingham <notting@redhat.com> 5:1.4.1-9
+- set write_bcc to no by default (since we ship exim)
+- build against sasl2 (#126724)
+
+* Mon Jun 28 2004 Bill Nottingham <notting@redhat.com>
+- remove autosplat patch (#116769)
+
 * Tue Jun 15 2004 Elliot Lee <sopwith@redhat.com>
 - rebuilt
 
