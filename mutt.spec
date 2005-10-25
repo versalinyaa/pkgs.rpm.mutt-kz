@@ -2,7 +2,7 @@ Summary: A text mode mail user agent.
 Name: mutt
 %define uversion 0.9
 Version: 1.4.2.1
-Release: 3
+Release: 4
 Epoch: 5
 License: GPL
 Group: Applications/Internet
@@ -152,6 +152,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man5/muttrc.*
 
 %changelog
+* Mon Oct 24 2005 Bill Nottingham <notting@redhat.com> 5:1.4.2.1-4
+- add patch from 1.5 branch to fix SASL logging (#157251, #171528)
+
 * Fri Aug 26 2005 Bill Nottingham <notting@redhat.com> 5:1.4.2.1-3
 - add patch from 1.5 branch to fix base64 decoding (#166718)
 
