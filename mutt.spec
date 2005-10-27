@@ -2,7 +2,7 @@ Summary: A text mode mail user agent.
 Name: mutt
 %define uversion 0.9
 Version: 1.4.2.1
-Release: 4
+Release: 5
 Epoch: 5
 License: GPL
 Group: Applications/Internet
@@ -24,6 +24,7 @@ Patch13: mutt-1.4.1-plain.patch
 Patch14: mutt-1.4.1-rfc1734.patch
 Patch15: mutt-1.4.2.1-gcc4.patch
 Patch20: mutt-166718.patch
+Patch21: mutt-sasl-log.patch
 Url: http://www.mutt.org/
 Requires: smtpdaemon, webclient, mailcap, gettext
 Obsoletes: urlview
@@ -67,6 +68,7 @@ you are going to use.
 %patch14 -p1 -b .rfc1734
 %patch15 -p1 -b .gcc4
 %patch20 -p1
+%patch21 -p1
 
 install -m644 %{SOURCE1} mutt_ldap_query
 
@@ -152,7 +154,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man5/muttrc.*
 
 %changelog
-* Mon Oct 24 2005 Bill Nottingham <notting@redhat.com> 5:1.4.2.1-4
+* Thu Oct 27 2005 Bill Nottingham <notting@redhat.com> 5:1.4.2.1-5
 - add patch from 1.5 branch to fix SASL logging (#157251, #171528)
 
 * Fri Aug 26 2005 Bill Nottingham <notting@redhat.com> 5:1.4.2.1-3
