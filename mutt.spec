@@ -2,7 +2,7 @@ Summary: A text mode mail user agent.
 Name: mutt
 %define uversion 0.9
 Version: 1.4.2.1
-Release: 6.2.1
+Release: 7
 Epoch: 5
 License: GPL
 Group: Applications/Internet
@@ -25,6 +25,7 @@ Patch14: mutt-1.4.1-rfc1734.patch
 Patch15: mutt-1.4.2.1-gcc4.patch
 Patch20: mutt-166718.patch
 Patch21: mutt-sasl-log.patch
+Patch22: mutt-1.4.2.1-imapns.patch
 Url: http://www.mutt.org/
 Requires: smtpdaemon, webclient, mailcap, gettext
 Obsoletes: urlview
@@ -69,6 +70,7 @@ you are going to use.
 %patch15 -p1 -b .gcc4
 %patch20 -p1
 %patch21 -p1
+%patch22 -p1 -b .imapns
 
 install -m644 %{SOURCE1} mutt_ldap_query
 
@@ -154,6 +156,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man5/muttrc.*
 
 %changelog
+* Thu Jun 29 2006 Miroslav Lichvar <mlichvar@redhat.com> 5:1.4.2.1-7
+- fix a buffer overflow when processing IMAP namespace (#197152, CVE-2006-3242)
+
 * Fri Feb 10 2006 Jesse Keating <jkeating@redhat.com> - 5:1.4.2.1-6.2.1
 - bump again for double-long bug on ppc(64)
 
