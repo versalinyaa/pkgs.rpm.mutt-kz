@@ -2,7 +2,7 @@ Summary: A text mode mail user agent.
 Name: mutt
 %define uversion 0.9
 Version: 1.4.2.1
-Release: 7
+Release: 7.1
 Epoch: 5
 License: GPL
 Group: Applications/Internet
@@ -156,6 +156,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man5/muttrc.*
 
 %changelog
+* Wed Jul 12 2006 Jesse Keating <jkeating@redhat.com> - 5:1.4.2.1-7.1
+- rebuild
+
 * Thu Jun 29 2006 Miroslav Lichvar <mlichvar@redhat.com> 5:1.4.2.1-7
 - fix a buffer overflow when processing IMAP namespace (#197152, CVE-2006-3242)
 
