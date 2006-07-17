@@ -1,8 +1,8 @@
 Summary: A text mode mail user agent.
 Name: mutt
 %define uversion 0.9
-Version: 1.4.2.1
-Release: 7.1
+Version: 1.4.2.2
+Release: 1
 Epoch: 5
 License: GPL
 Group: Applications/Internet
@@ -15,7 +15,6 @@ Patch1: mutt-default.patch
 Patch2: mutt-1.2.5-muttbug-tmp.patch
 Patch4: mutt-1.4.1-muttrc.patch
 Patch5: mutt-sasl.patch
-Patch7: mutt-1.4.1-bcc.patch
 Patch8: mutt-1.4-sasl2.patch
 Patch10: urlview-0.9-default.patch
 Patch11: urlview.diff
@@ -25,7 +24,7 @@ Patch14: mutt-1.4.1-rfc1734.patch
 Patch15: mutt-1.4.2.1-gcc4.patch
 Patch20: mutt-166718.patch
 Patch21: mutt-sasl-log.patch
-Patch22: mutt-1.4.2.1-imapns.patch
+Patch22: mutt-1.4-manual.patch
 Url: http://www.mutt.org/
 Requires: smtpdaemon, webclient, mailcap, gettext
 Obsoletes: urlview
@@ -60,7 +59,6 @@ you are going to use.
 %patch4 -p1 -b .https
 # fix auth to windows KDCs (#98662)
 %patch5 -p1 -b .sasl
-%patch7 -p1 -b .bcc
 %patch8 -p1 -b .sasl2
 %patch10 -p0 -b .default
 %patch11 -p0 -b .build
@@ -70,7 +68,7 @@ you are going to use.
 %patch15 -p1 -b .gcc4
 %patch20 -p1
 %patch21 -p1
-%patch22 -p1 -b .imapns
+%patch22 -p1 -b .manual
 
 install -m644 %{SOURCE1} mutt_ldap_query
 
@@ -99,7 +97,9 @@ rm -rf $RPM_BUILD_ROOT
   sysconfdir=$RPM_BUILD_ROOT/etc \
   docdir=$RPM_BUILD_ROOT%{_docdir}/mutt-%{version} \
   install
-mkdir -p $RPM_BUILD_ROOT/etc/X11/applnk/Internet
+
+sed 's/\x1b\[[0-9]*m//g' < doc/manual.txt | iconv -f iso-8859-1 -t utf-8 \
+  > doc/manual.txt_ && mv -f doc/manual.txt{_,}
 
 # we like GPG here
 cat contrib/gpg.rc >> \
@@ -125,10 +125,9 @@ cp AUTHORS ChangeLog COPYING INSTALL README sample.urlview urlview.sgml \
 cd ..
 
 # remove unpackaged files from the buildroot
-rm -rf $RPM_BUILD_ROOT%{_sysconfdir}/X11
 rm -f $RPM_BUILD_ROOT%{_sysconfdir}/mime.types
-rm -f $RPM_BUILD_ROOT%{_bindir}/muttbug
-rm -f $RPM_BUILD_ROOT%{_mandir}/man1/{muttbug.1,mutt_dotlock.1}*
+rm -f $RPM_BUILD_ROOT%{_bindir}/{flea,muttbug}
+rm -f $RPM_BUILD_ROOT%{_mandir}/man1/{flea,muttbug,mutt_dotlock}.1*
 rm -f $RPM_BUILD_ROOT%{_mandir}/man5/mbox.5*
 
 %find_lang %{name}
@@ -145,17 +144,21 @@ rm -rf $RPM_BUILD_ROOT
 %doc COPYRIGHT doc/manual.txt contrib/language* mime.types mutt_ldap_query
 %doc urlview-%{uversion}/doc/urlview
 %{_bindir}/mutt
-%{_bindir}/flea
 %{_bindir}/pgpring
 %{_bindir}/pgpewrap
 %{_bindir}/urlview
 %{_bindir}/url_handler.sh
 %{_mandir}/man1/urlview.*
 %{_mandir}/man1/mutt.*
-%{_mandir}/man1/flea.*
 %{_mandir}/man5/muttrc.*
 
 %changelog
+* Mon Jul 17 2006 Miroslav Lichvar <mlichvar@redhat.com> 5:1.4.2.2-1
+- update to 1.4.2.2
+- fix directories in manual.txt (#162207)
+- drop bcc patch (#197408)
+- don't package flea
+
 * Wed Jul 12 2006 Jesse Keating <jkeating@redhat.com> - 5:1.4.2.1-7.1
 - rebuild
 
