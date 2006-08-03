@@ -2,7 +2,7 @@ Summary: A text mode mail user agent.
 Name: mutt
 %define uversion 0.9
 Version: 1.4.2.2
-Release: 1
+Release: 2
 Epoch: 5
 License: GPL
 Group: Applications/Internet
@@ -12,7 +12,6 @@ Source1: mutt_ldap_query
 Source3: mutt-colors
 Patch0: mutt-1.4-nosetgid.patch
 Patch1: mutt-default.patch
-Patch2: mutt-1.2.5-muttbug-tmp.patch
 Patch4: mutt-1.4.1-muttrc.patch
 Patch5: mutt-sasl.patch
 Patch8: mutt-1.4-sasl2.patch
@@ -25,6 +24,7 @@ Patch15: mutt-1.4.2.1-gcc4.patch
 Patch20: mutt-166718.patch
 Patch21: mutt-sasl-log.patch
 Patch22: mutt-1.4-manual.patch
+Patch23: mutt-1.4-saslauth.patch
 Url: http://www.mutt.org/
 Requires: smtpdaemon, webclient, mailcap, gettext
 Obsoletes: urlview
@@ -53,8 +53,6 @@ you are going to use.
 # Something to make default colors work right.
 # fixme: make sure this is still needed
 %patch1 -p1 -b .default
-# use mktemp -d in muttbug
-%patch2 -p1 -b .tmp
 # make it recognize https urls too
 %patch4 -p1 -b .https
 # fix auth to windows KDCs (#98662)
@@ -69,6 +67,7 @@ you are going to use.
 %patch20 -p1
 %patch21 -p1
 %patch22 -p1 -b .manual
+%patch23 -p1 -b .saslauth
 
 install -m644 %{SOURCE1} mutt_ldap_query
 
@@ -153,6 +152,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man5/muttrc.*
 
 %changelog
+* Thu Aug 03 2006 Miroslav Lichvar <mlichvar@redhat.com> 5:1.4.2.2-2
+- fix a SASL authentication bug (#199591)
+
 * Mon Jul 17 2006 Miroslav Lichvar <mlichvar@redhat.com> 5:1.4.2.2-1
 - update to 1.4.2.2
 - fix directories in manual.txt (#162207)
