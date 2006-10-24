@@ -2,7 +2,7 @@ Summary: A text mode mail user agent.
 Name: mutt
 %define uversion 0.9
 Version: 1.4.2.2
-Release: 2
+Release: 3%{?dist}
 Epoch: 5
 License: GPL
 Group: Applications/Internet
@@ -25,6 +25,7 @@ Patch20: mutt-166718.patch
 Patch21: mutt-sasl-log.patch
 Patch22: mutt-1.4-manual.patch
 Patch23: mutt-1.4-saslauth.patch
+Patch24: mutt-safeopen.patch
 Url: http://www.mutt.org/
 Requires: smtpdaemon, webclient, mailcap, gettext
 Obsoletes: urlview
@@ -68,6 +69,7 @@ you are going to use.
 %patch21 -p1
 %patch22 -p1 -b .manual
 %patch23 -p1 -b .saslauth
+%patch24 -p0 -b .safeopen
 
 install -m644 %{SOURCE1} mutt_ldap_query
 
@@ -152,6 +154,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man5/muttrc.*
 
 %changelog
+* Tue Oct 24 2006 Miroslav Lichvar <mlichvar@redhat.com> 5:1.4.2.2-3
+- fix insecure temp file creation on NFS (#211085, CVE-2006-5297)
+
 * Thu Aug 03 2006 Miroslav Lichvar <mlichvar@redhat.com> 5:1.4.2.2-2
 - fix a SASL authentication bug (#199591)
 
