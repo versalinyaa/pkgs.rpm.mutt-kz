@@ -2,7 +2,7 @@ Summary: A text mode mail user agent.
 Name: mutt
 %define uversion 0.9
 Version: 1.4.2.2
-Release: 3%{?dist}
+Release: 4%{?dist}
 Epoch: 5
 License: GPL
 Group: Applications/Internet
@@ -154,6 +154,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man5/muttrc.*
 
 %changelog
+* Tue Oct 31 2006 Miroslav Lichvar <mlichvar@redhat.com> 5:1.4.2.2-4
+- fix POP authentication with latest cyrus-sasl (#212816)
+
 * Tue Oct 24 2006 Miroslav Lichvar <mlichvar@redhat.com> 5:1.4.2.2-3
 - fix insecure temp file creation on NFS (#211085, CVE-2006-5297)
 
