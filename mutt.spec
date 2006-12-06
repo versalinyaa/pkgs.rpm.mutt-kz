@@ -2,7 +2,7 @@ Summary: A text mode mail user agent.
 Name: mutt
 %define uversion 0.9
 Version: 1.4.2.2
-Release: 4%{?dist}
+Release: 5%{?dist}
 Epoch: 5
 License: GPL
 Group: Applications/Internet
@@ -26,8 +26,9 @@ Patch21: mutt-sasl-log.patch
 Patch22: mutt-1.4-manual.patch
 Patch23: mutt-1.4-saslauth.patch
 Patch24: mutt-safeopen.patch
+Patch25: mutt-imapfcc.patch
 Url: http://www.mutt.org/
-Requires: smtpdaemon, webclient, mailcap, gettext
+Requires: /usr/sbin/sendmail webclient mailcap
 Obsoletes: urlview
 Provides: urlview
 Buildroot: %{_tmppath}/%{name}-%{version}-%{release}-root
@@ -70,6 +71,7 @@ you are going to use.
 %patch22 -p1 -b .manual
 %patch23 -p1 -b .saslauth
 %patch24 -p0 -b .safeopen
+%patch25 -p0 -b .imapfcc
 
 install -m644 %{SOURCE1} mutt_ldap_query
 
@@ -154,6 +156,10 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man5/muttrc.*
 
 %changelog
+* Wed Dec 06 2006 Miroslav Lichvar <mlichvar@redhat.com> 5:1.4.2.2-5
+- use correct fcc folder with IMAP (#217469)
+- don't require smtpdaemon, gettext
+
 * Tue Oct 31 2006 Miroslav Lichvar <mlichvar@redhat.com> 5:1.4.2.2-4
 - fix POP authentication with latest cyrus-sasl (#212816)
 
