@@ -1,0 +1,31 @@
+--- mutt-1.5.13/doc/manual.xml.head.manual	2007-02-07 14:05:47.000000000 +0100
++++ mutt-1.5.13/doc/manual.xml.head	2007-02-07 14:05:47.000000000 +0100
+@@ -4886,7 +4886,7 @@
+ <para>
+ When you add an attachment to your mail message, Mutt searches your
+ personal mime.types file at <literal>&dollar;&lcub;HOME&rcub;/.mime.types</literal>, and then
+-the system mime.types file at <literal>/usr/local/share/mutt/mime.types</literal> or
++the system mime.types file at <literal>/usr/share/mutt/mime.types</literal> or
+ <literal>/etc/mime.types</literal>
+ </para>
+ 
+@@ -4943,7 +4943,7 @@
+ is a colon delimited list set to
+ 
+ <screen>
+-${HOME}/.mailcap:/usr/local/share/mutt/mailcap:/etc/mailcap:/etc/mailcap:/usr/etc/mailcap:/usr/local/etc/mailcap
++${HOME}/.mailcap:/usr/share/mutt/mailcap:/etc/mailcap:/etc/mailcap:/usr/etc/mailcap:/usr/local/etc/mailcap
+ </screen>
+ 
+ where <literal>&dollar;HOME</literal> is your home directory.
+--- mutt-1.5.13/init.h.manual	2007-02-07 14:05:47.000000000 +0100
++++ mutt-1.5.13/init.h	2007-02-07 14:05:47.000000000 +0100
+@@ -82,7 +82,7 @@
+ 
+ /* build complete documentation */
+ 
+-#ifdef _MAKEDOC
++#if 0
+ # ifndef USE_IMAP
+ #  define USE_IMAP
+ # endif

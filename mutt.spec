@@ -1,44 +1,26 @@
-Summary: A text mode mail user agent.
+Summary: A text mode mail user agent
 Name: mutt
-%define uversion 0.9
-Version: 1.4.2.2
-Release: 5%{?dist}
+Version: 1.5.13
+Release: 1.20070126cvs%{?dist}
 Epoch: 5
 License: GPL
 Group: Applications/Internet
-Source: ftp://ftp.mutt.org/pub/mutt/mutt-%{version}i.tar.gz
+Source: ftp://ftp.mutt.org/pub/mutt/devel/mutt-%{version}.tar.gz
+%define uversion 0.9
 Source2: ftp://ftp.mutt.org/pub/mutt/contrib/urlview-%{uversion}.tar.gz
 Source1: mutt_ldap_query
-Source3: mutt-colors
-Patch0: mutt-1.4-nosetgid.patch
-Patch1: mutt-default.patch
-Patch4: mutt-1.4.1-muttrc.patch
-Patch5: mutt-sasl.patch
-Patch8: mutt-1.4-sasl2.patch
-Patch10: urlview-0.9-default.patch
-Patch11: urlview.diff
-Patch12: urlview-0.9-ncursesw.patch
-Patch13: mutt-1.4.1-plain.patch
-Patch14: mutt-1.4.1-rfc1734.patch
-Patch15: mutt-1.4.2.1-gcc4.patch
-Patch20: mutt-166718.patch
-Patch21: mutt-sasl-log.patch
-Patch22: mutt-1.4-manual.patch
-Patch23: mutt-1.4-saslauth.patch
-Patch24: mutt-safeopen.patch
-Patch25: mutt-imapfcc.patch
+Patch1: mutt-1.5.13_20070126cvs.patch.bz2
+Patch2: mutt-1.5.13-nodotlock.patch
+Patch3: mutt-1.5.13-muttrc.patch
+Patch4: mutt-1.5.13-manual.patch
+Patch5: urlview-0.9-default.patch
+Patch6: urlview.diff
 Url: http://www.mutt.org/
 Requires: /usr/sbin/sendmail webclient mailcap
-Obsoletes: urlview
-Provides: urlview
-Buildroot: %{_tmppath}/%{name}-%{version}-%{release}-root
-Conflicts: mutt-us
-Provides: mutt-i
-%{!?nossl:BuildPrereq: openssl-devel}
-%{!?nokerberos:BuildPrereq: krb5-devel}
-BuildPrereq: cyrus-sasl-devel
-BuildPrereq: /usr/sbin/sendmail
-BuildPrereq: ncurses-devel >= 5.3-5
+BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
+BuildRequires: /usr/sbin/sendmail
+BuildRequires: cyrus-sasl-devel db4-devel gnutls-devel krb5-devel ncurses-devel
+BuildRequires: gettext docbook-style-xsl libxslt lynx
 
 %description
 Mutt is a text-mode mail user agent. Mutt supports color, threading,
@@ -49,89 +31,66 @@ it, or if you are new to mail programs and have not decided which one
 you are going to use.
 
 %prep
-%setup -n mutt-%{version} -q -a 2
+%setup -q -a 2
+%patch1 -p1
 # Thou shalt use fcntl, and only fcntl
-%patch0 -p1 -b .nosetgid
-# Something to make default colors work right.
-# fixme: make sure this is still needed
-%patch1 -p1 -b .default
-# make it recognize https urls too
-%patch4 -p1 -b .https
-# fix auth to windows KDCs (#98662)
-%patch5 -p1 -b .sasl
-%patch8 -p1 -b .sasl2
-%patch10 -p0 -b .default
-%patch11 -p0 -b .build
-%patch12 -p0 -b .ncursesw
-%patch13 -p1 -b .plain
-%patch14 -p1 -b .rfc1734
-%patch15 -p1 -b .gcc4
-%patch20 -p1
-%patch21 -p1
-%patch22 -p1 -b .manual
-%patch23 -p1 -b .saslauth
-%patch24 -p0 -b .safeopen
-%patch25 -p0 -b .imapfcc
+%patch2 -p1 -b .nodl
+%patch3 -p1 -b .muttrc
+%patch4 -p1 -b .manual
+%patch5 -p0 -b .default
+%patch6 -p0 -b .build
 
-install -m644 %{SOURCE1} mutt_ldap_query
+install -p -m644 %{SOURCE1} mutt_ldap_query
 
 %build
-export -n LINGUAS
-CFLAGS="$RPM_OPT_FLAGS" ./configure --prefix=%{_prefix} \
-	--with-sharedir=/etc --sysconfdir=/etc \
-	--with-docdir=%{_docdir}/mutt-%{version} \
-	--with-mandir=%{_mandir} \
-	--with-infodir=%{_infodir} \
+%configure \
 	--enable-pop --enable-imap \
+	--with-gnutls \
+	--with-gss \
 	--with-sasl \
-%{!?nossl:--with-ssl} \
-%{!?nokerberos:--with-gss} \
-	--disable-warnings --with-ncursesw --disable-domain \
-	--disable-flock --enable-fcntl
-make
+	--enable-inodesort \
+	--enable-hcache \
+	--with-docdir=%{_docdir}/%{name}-%{version}
+make %{?_smp_mflags}
 
 cd urlview-%{uversion}
-%configure --with-ncursesw
-make
+%configure
+make %{?_smp_mflags}
 
 %install
 rm -rf $RPM_BUILD_ROOT
-%makeinstall sharedir=$RPM_BUILD_ROOT/etc \
-  sysconfdir=$RPM_BUILD_ROOT/etc \
-  docdir=$RPM_BUILD_ROOT%{_docdir}/mutt-%{version} \
-  install
-
-sed 's/\x1b\[[0-9]*m//g' < doc/manual.txt | iconv -f iso-8859-1 -t utf-8 \
-  > doc/manual.txt_ && mv -f doc/manual.txt{_,}
+make install DESTDIR=$RPM_BUILD_ROOT
 
 # we like GPG here
 cat contrib/gpg.rc >> \
-	$RPM_BUILD_ROOT/etc/Muttrc
-grep -5 "^color" contrib/sample.muttrc >> \
-	$RPM_BUILD_ROOT/etc/Muttrc
-# and we use aspell
+	$RPM_BUILD_ROOT%{_sysconfdir}/Muttrc
 
-cat >> $RPM_BUILD_ROOT/etc/Muttrc <<EOF
+grep -5 "^color" contrib/sample.muttrc >> \
+	$RPM_BUILD_ROOT%{_sysconfdir}/Muttrc
+
+# and we use aspell
+cat >> $RPM_BUILD_ROOT%{_sysconfdir}/Muttrc <<EOF
 # use aspell
-set ispell="/usr/bin/aspell --mode=email check"
-source /etc/Muttrc.local
+set ispell="%{_bindir}/aspell --mode=email check"
+
+source %{_sysconfdir}/Muttrc.local
 EOF
 
-touch $RPM_BUILD_ROOT/etc/Muttrc.local
+echo "# Local configuration for Mutt." > $RPM_BUILD_ROOT%{_sysconfdir}/Muttrc.local
 
 cd urlview-%{uversion}
-%makeinstall
-install -m 755 url_handler.sh $RPM_BUILD_ROOT%{_bindir}/url_handler.sh
+install urlview url_handler.sh $RPM_BUILD_ROOT%{_bindir}
+install -m 644 urlview.man $RPM_BUILD_ROOT%{_mandir}/man1/urlview.1
 mkdir -p doc/urlview
-cp AUTHORS ChangeLog COPYING INSTALL README sample.urlview urlview.sgml \
+cp -p AUTHORS ChangeLog COPYING README sample.urlview \
   doc/urlview
 cd ..
 
 # remove unpackaged files from the buildroot
-rm -f $RPM_BUILD_ROOT%{_sysconfdir}/mime.types
+rm -f $RPM_BUILD_ROOT%{_sysconfdir}/{*.dist,mime.types}
 rm -f $RPM_BUILD_ROOT%{_bindir}/{flea,muttbug}
 rm -f $RPM_BUILD_ROOT%{_mandir}/man1/{flea,muttbug,mutt_dotlock}.1*
-rm -f $RPM_BUILD_ROOT%{_mandir}/man5/mbox.5*
+rm -f $RPM_BUILD_ROOT%{_mandir}/man5/{mbox,mmdf}.5*
 
 %find_lang %{name}
 
@@ -140,15 +99,16 @@ rm -rf $RPM_BUILD_ROOT
 
 %files -f %{name}.lang
 %defattr(-,root,root)
-%config(noreplace) /etc/Muttrc
-%config(noreplace) /etc/Muttrc.local
-%doc doc/*.txt
-%doc contrib/*.rc README* contrib/sample.* NEWS
-%doc COPYRIGHT doc/manual.txt contrib/language* mime.types mutt_ldap_query
+%config(noreplace) %{_sysconfdir}/Muttrc
+%config(noreplace) %{_sysconfdir}/Muttrc.local
+%doc COPYRIGHT ChangeLog GPL NEWS README* UPDATING mutt_ldap_query
+%doc contrib/*.rc contrib/sample.* contrib/ca-bundle.crt contrib/colors.*
+%doc doc/manual.txt doc/smime-notes.txt
 %doc urlview-%{uversion}/doc/urlview
 %{_bindir}/mutt
 %{_bindir}/pgpring
 %{_bindir}/pgpewrap
+%{_bindir}/smime_keys
 %{_bindir}/urlview
 %{_bindir}/url_handler.sh
 %{_mandir}/man1/urlview.*
@@ -156,6 +116,10 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man5/muttrc.*
 
 %changelog
+* Wed Feb 07 2007 Miroslav Lichvar <mlichvar@redhat.com> 5:1.5.13-1.20070126cvs
+- update to 1.5.13, and latest CVS (#168183, #220816)
+- spec cleanup
+
 * Wed Dec 06 2006 Miroslav Lichvar <mlichvar@redhat.com> 5:1.4.2.2-5
 - use correct fcc folder with IMAP (#217469)
 - don't require smtpdaemon, gettext
@@ -323,7 +287,7 @@ rm -rf $RPM_BUILD_ROOT
 * Tue Feb 13 2001 Bill Nottingham <notting@redhat.com>
 - change buildprereq to /usr/sbin/sendmail (it's what it should have been
   originally)
-- %langify
+- %%langify
 
 * Tue Feb 13 2001 Michael Stefaniuc <mstefani@redhat.com>
 - changed buildprereq to smtpdaemon
@@ -371,7 +335,7 @@ rm -rf $RPM_BUILD_ROOT
 * Wed Jun 21 2000 Bill Nottingham <notting@redhat.com>
 - update to 1.2.2i
 
-* Mon Jun 19 2000 Trond Eivind Glomsrød <teg@redhat.com>
+* Mon Jun 19 2000 Trond Eivind GlomsrÃ¸d <teg@redhat.com>
 - use aspell
 
 * Sat Jun 10 2000 Bill Nottingham <notting@redhat.com>
