@@ -1,7 +1,7 @@
 Summary: A text mode mail user agent
 Name: mutt
 Version: 1.5.13
-Release: 1.20070126cvs%{?dist}
+Release: 2.20070212cvs%{?dist}
 Epoch: 5
 License: GPL
 Group: Applications/Internet
@@ -9,7 +9,7 @@ Source: ftp://ftp.mutt.org/pub/mutt/devel/mutt-%{version}.tar.gz
 %define uversion 0.9
 Source2: ftp://ftp.mutt.org/pub/mutt/contrib/urlview-%{uversion}.tar.gz
 Source1: mutt_ldap_query
-Patch1: mutt-1.5.13_20070126cvs.patch.bz2
+Patch1: mutt-1.5.13_20070212cvs.patch.bz2
 Patch2: mutt-1.5.13-nodotlock.patch
 Patch3: mutt-1.5.13-muttrc.patch
 Patch4: mutt-1.5.13-manual.patch
@@ -20,7 +20,7 @@ Requires: /usr/sbin/sendmail webclient mailcap
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildRequires: /usr/sbin/sendmail
 BuildRequires: cyrus-sasl-devel db4-devel gnutls-devel krb5-devel ncurses-devel
-BuildRequires: gettext docbook-style-xsl libxslt lynx
+BuildRequires: libidn-devel gettext docbook-style-xsl libxslt lynx
 
 %description
 Mutt is a text-mode mail user agent. Mutt supports color, threading,
@@ -48,6 +48,7 @@ install -p -m644 %{SOURCE1} mutt_ldap_query
 	--with-gnutls \
 	--with-gss \
 	--with-sasl \
+	--with-idn \
 	--enable-inodesort \
 	--enable-hcache \
 	--with-docdir=%{_docdir}/%{name}-%{version}
@@ -116,6 +117,10 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man5/muttrc.*
 
 %changelog
+* Thu Feb 15 2007 Miroslav Lichvar <mlichvar@redhat.com> 5:1.5.13-2.20070212cvs
+- update to latest CVS
+- enable libidn support (#228158)
+
 * Wed Feb 07 2007 Miroslav Lichvar <mlichvar@redhat.com> 5:1.5.13-1.20070126cvs
 - update to 1.5.13, and latest CVS (#168183, #220816)
 - spec cleanup
