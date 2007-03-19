@@ -154,20 +154,6 @@
      }
  
      mutt_clear_error ();
---- mutt-1.5.14/configure.in.checkmboxsize	2006-09-01 09:00:18.000000000 +0200
-+++ mutt-1.5.14/configure.in	2007-03-13 16:22:15.000000000 +0100
-@@ -786,11 +786,6 @@
-                    incorrectly cache the attributes of small files.])
-         fi])
- 
--AC_ARG_ENABLE(buffy-size, AC_HELP_STRING([--enable-buffy-size], [Use file size attribute instead of access time]),
--        [if test x$enableval = xyes; then
--                AC_DEFINE(BUFFY_SIZE,1,[ Define to enable the "buffy_size" feature. ])
--        fi])
--
- AC_ARG_ENABLE(mailtool, AC_HELP_STRING([--enable-mailtool], [Enable Sun mailtool attachments support]),
-         [if test x$enableval = xyes; then
-                 AC_DEFINE(SUN_ATTACHMENT,1,[ Define to enable Sun mailtool attachments support. ])
 --- mutt-1.5.14/mx.c.checkmboxsize	2006-08-16 19:21:06.000000000 +0200
 +++ mutt-1.5.14/mx.c	2007-03-13 16:22:15.000000000 +0100
 @@ -38,9 +38,7 @@

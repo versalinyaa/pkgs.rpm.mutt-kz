@@ -1,7 +1,7 @@
 Summary: A text mode mail user agent
 Name: mutt
 Version: 1.5.14
-Release: 2%{?dist}
+Release: 3%{?dist}
 Epoch: 5
 License: GPL
 Group: Applications/Internet
@@ -117,6 +117,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man5/muttrc.*
 
 %changelog
+* Mon Mar 19 2007 Miroslav Lichvar <mlichvar@redhat.com> 5:1.5.14-3
+- fix building
+
 * Mon Mar 19 2007 Miroslav Lichvar <mlichvar@redhat.com> 5:1.5.14-2
 - add check_mbox_size configuration variable; if enabled, file size is used
   instead of access time when checking for new mail
