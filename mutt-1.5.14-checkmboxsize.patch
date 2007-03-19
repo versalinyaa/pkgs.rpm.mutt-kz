@@ -1,0 +1,313 @@
+--- mutt-1.5.14/buffy.c.checkmboxsize	2006-11-19 06:17:27.000000000 +0100
++++ mutt-1.5.14/buffy.c	2007-03-13 16:22:15.000000000 +0100
+@@ -45,8 +45,6 @@
+ static short BuffyCount = 0;	/* how many boxes with new mail */
+ static short BuffyNotify = 0;	/* # of unnotified new boxes */
+ 
+-#ifdef BUFFY_SIZE
+-
+ /* Find the last message in the file. 
+  * upon success return 0. If no message found - return -1 */
+ 
+@@ -142,7 +140,7 @@
+   struct stat sb;
+   struct stat tmp_sb;
+   
+-  if (stat (path,&sb) != 0)
++  if (!option(OPTCHECKMBOXSIZE) || stat (path,&sb) != 0)
+     return NULL;
+ 
+   for (tmp = Incoming; tmp; tmp = tmp->next)
+@@ -167,15 +165,12 @@
+     b->size = 0;
+   return;
+ }
+-#endif
+ 
+ int mutt_parse_mailboxes (BUFFER *path, BUFFER *s, unsigned long data, BUFFER *err)
+ {
+   BUFFY **tmp,*tmp1;
+   char buf[_POSIX_PATH_MAX];
+-#ifdef BUFFY_SIZE
+   struct stat sb;
+-#endif /* BUFFY_SIZE */
+ 
+   while (MoreArgs (s))
+   {
+@@ -232,31 +227,28 @@
+     (*tmp)->notified = 1;
+     (*tmp)->newly_created = 0;
+ 
+-#ifdef BUFFY_SIZE
+-    /* for buffy_size, it is important that if the folder is new (tested by
++    /* for check_mbox_size, it is important that if the folder is new (tested by
+      * reading it), the size is set to 0 so that later when we check we see
+-     * that it increased .  without buffy_size we probably don't care.
++     * that it increased .  without check_mbox_size we probably don't care.
+      */
+-    if (stat ((*tmp)->path, &sb) == 0 && !test_new_folder ((*tmp)->path))
++    if (option(OPTCHECKMBOXSIZE) &&
++	stat ((*tmp)->path, &sb) == 0 && !test_new_folder ((*tmp)->path))
+     {
+       /* some systems out there don't have an off_t type */
+       (*tmp)->size = (long) sb.st_size;
+     }
+     else
+       (*tmp)->size = 0;
+-#endif /* BUFFY_SIZE */
+   }
+   return 0;
+ }
+ 
+-#ifdef BUFFY_SIZE
+-/* people use buffy_size on systems where modified time attributes are BADLY
+- * broken. Ignore them.
++/* people use check_mbox_size on systems where modified time attributes are 
++ * BADLY broken. Ignore them.
+  */
+-#define STAT_CHECK (sb.st_size > tmp->size)
+-#else
+-#define STAT_CHECK (sb.st_mtime > sb.st_atime || (tmp->newly_created && sb.st_ctime == sb.st_mtime && sb.st_ctime == sb.st_atime))
+-#endif /* BUFFY_SIZE */
++#define STAT_CHECK_SIZE (sb.st_size > tmp->size)
++#define STAT_CHECK_TIME (sb.st_mtime > sb.st_atime || (tmp->newly_created && sb.st_ctime == sb.st_mtime && sb.st_ctime == sb.st_atime))
++#define STAT_CHECK (option(OPTCHECKMBOXSIZE) ? STAT_CHECK_SIZE : STAT_CHECK_TIME)
+ 
+ int mutt_buffy_check (int force)
+ {
+@@ -323,9 +315,7 @@
+        * be ready for when it does. */
+       tmp->newly_created = 1;
+       tmp->magic = 0;
+-#ifdef BUFFY_SIZE
+       tmp->size = 0;
+-#endif
+       continue;
+     }
+ #ifdef USE_IMAP
+@@ -365,13 +355,11 @@
+ 	  BuffyCount++;
+ 	  tmp->new = 1;
+ 	}
+-#ifdef BUFFY_SIZE
+ 	else
+ 	{
+ 	  /* some other program has deleted mail from the folder */
+ 	  tmp->size = (long) sb.st_size;
+ 	}
+-#endif
+ 	if (tmp->newly_created &&
+ 	    (sb.st_ctime != sb.st_mtime || sb.st_ctime != sb.st_atime))
+ 	  tmp->newly_created = 0;
+@@ -407,10 +395,8 @@
+ 	break;
+       }
+     }
+-#ifdef BUFFY_SIZE
+     else if (Context && Context->path)
+       tmp->size = (long) sb.st_size;	/* update the size */
+-#endif
+ 
+     if (!tmp->new)
+       tmp->notified = 0;
+--- mutt-1.5.14/commands.c.checkmboxsize	2006-12-07 23:40:19.000000000 +0100
++++ mutt-1.5.14/commands.c	2007-03-13 16:22:15.000000000 +0100
+@@ -40,9 +40,7 @@
+ #include "imap.h"
+ #endif
+ 
+-#ifdef BUFFY_SIZE
+ #include "buffy.h"
+-#endif
+ 
+ #include <errno.h>
+ #include <unistd.h>
+@@ -703,11 +701,8 @@
+   char prompt[SHORT_STRING], buf[_POSIX_PATH_MAX];
+   CONTEXT ctx;
+   struct stat st;
+-#ifdef BUFFY_SIZE
+   BUFFY *tmp = NULL;
+-#else
+   struct utimbuf ut;
+-#endif
+ 
+   *redraw = 0;
+ 
+@@ -842,11 +837,9 @@
+ 
+     if (need_buffy_cleanup)
+     {
+-#ifdef BUFFY_SIZE
+       tmp = mutt_find_mailbox (buf);
+       if (tmp && !tmp->new)
+ 	mutt_update_mailbox (tmp);
+-#else
+       /* fix up the times so buffy won't get confused */
+       if (st.st_mtime > st.st_atime)
+       {
+@@ -856,7 +849,6 @@
+       }
+       else
+ 	utime (buf, NULL);
+-#endif
+     }
+ 
+     mutt_clear_error ();
+--- mutt-1.5.14/configure.in.checkmboxsize	2006-09-01 09:00:18.000000000 +0200
++++ mutt-1.5.14/configure.in	2007-03-13 16:22:15.000000000 +0100
+@@ -786,11 +786,6 @@
+                    incorrectly cache the attributes of small files.])
+         fi])
+ 
+-AC_ARG_ENABLE(buffy-size, AC_HELP_STRING([--enable-buffy-size], [Use file size attribute instead of access time]),
+-        [if test x$enableval = xyes; then
+-                AC_DEFINE(BUFFY_SIZE,1,[ Define to enable the "buffy_size" feature. ])
+-        fi])
+-
+ AC_ARG_ENABLE(mailtool, AC_HELP_STRING([--enable-mailtool], [Enable Sun mailtool attachments support]),
+         [if test x$enableval = xyes; then
+                 AC_DEFINE(SUN_ATTACHMENT,1,[ Define to enable Sun mailtool attachments support. ])
+--- mutt-1.5.14/mx.c.checkmboxsize	2006-08-16 19:21:06.000000000 +0200
++++ mutt-1.5.14/mx.c	2007-03-13 16:22:15.000000000 +0100
+@@ -38,9 +38,7 @@
+ #include "pop.h"
+ #endif
+ 
+-#ifdef BUFFY_SIZE
+ #include "buffy.h"
+-#endif
+ 
+ #ifdef USE_DOTLOCK
+ #include "dotlock.h"
+@@ -57,9 +55,7 @@
+ #include <stdlib.h>
+ #include <string.h>
+ #include <ctype.h>
+-#ifndef BUFFY_SIZE
+ #include <utime.h>
+-#endif
+ 
+ 
+ #define mutt_is_spool(s)  (mutt_strcmp (Spoolfile, s) == 0)
+@@ -426,9 +422,7 @@
+   }
+   else if ((f = fopen (path, "r")) != NULL)
+   {
+-#ifndef BUFFY_SIZE
+     struct utimbuf times;
+-#endif
+ 
+     fgets (tmp, sizeof (tmp), f);
+     if (mutt_strncmp ("From ", tmp, 5) == 0)
+@@ -436,7 +430,7 @@
+     else if (mutt_strcmp (MMDF_SEP, tmp) == 0)
+       magic = M_MMDF;
+     safe_fclose (&f);
+-#ifndef BUFFY_SIZE
++
+     /* need to restore the times here, the file was not really accessed,
+      * only the type was accessed.  This is important, because detection
+      * of "new mail" depends on those times set correctly.
+@@ -444,7 +438,6 @@
+     times.actime = st.st_atime;
+     times.modtime = st.st_mtime;
+     utime (path, &times);
+-#endif
+   }
+   else
+   {
+@@ -773,9 +766,7 @@
+ /* save changes to disk */
+ static int sync_mailbox (CONTEXT *ctx, int *index_hint)
+ {
+-#ifdef BUFFY_SIZE
+   BUFFY *tmp = NULL;
+-#endif
+   int rc = -1;
+ 
+   if (!ctx->quiet)
+@@ -786,9 +777,7 @@
+     case M_MBOX:
+     case M_MMDF:
+       rc = mbox_sync_mailbox (ctx, index_hint);
+-#ifdef BUFFY_SIZE
+       tmp = mutt_find_mailbox (ctx->path);
+-#endif
+       break;
+       
+     case M_MH:
+@@ -815,10 +804,8 @@
+     mutt_error ( _("Could not synchronize mailbox %s!"), ctx->path);
+ #endif
+   
+-#ifdef BUFFY_SIZE
+   if (tmp && tmp->new == 0)
+     mutt_update_mailbox (tmp);
+-#endif
+   return rc;
+ }
+ 
+--- mutt-1.5.14/init.h.checkmboxsize	2007-03-13 16:22:15.000000000 +0100
++++ mutt-1.5.14/init.h	2007-03-13 16:22:15.000000000 +0100
+@@ -318,6 +318,12 @@
+   ** follow these menus.  The option is disabled by default because many 
+   ** visual terminals don't permit making the cursor invisible.
+   */
++  { "check_mbox_size",	DT_BOOL, R_NONE, OPTCHECKMBOXSIZE, 0 },
++  /*
++  ** .pp
++  ** When this variable is set, mutt will use file size attribute instead of
++  ** access time when checking for new mail.
++  */
+   { "charset",		DT_STR,	 R_NONE, UL &Charset, UL 0 },
+   /*
+   ** .pp
+--- mutt-1.5.14/buffy.h.checkmboxsize	2005-09-17 22:18:23.000000000 +0200
++++ mutt-1.5.14/buffy.h	2007-03-13 16:22:15.000000000 +0100
+@@ -23,9 +23,7 @@
+ typedef struct buffy_t
+ {
+   char *path;
+-#ifdef BUFFY_SIZE
+   long size;
+-#endif				/* BUFFY_SIZE */
+   struct buffy_t *next;
+   short new;			/* mailbox has new mail */
+   short notified;		/* user has been notified */
+@@ -39,7 +37,5 @@
+ 
+ extern time_t BuffyDoneTime;	/* last time we knew for sure how much mail there was */
+ 
+-#ifdef BUFFY_SIZE
+ BUFFY *mutt_find_mailbox (const char *path);
+ void mutt_update_mailbox (BUFFY * b);
+-#endif
+--- mutt-1.5.14/mutt.h.checkmboxsize	2007-01-30 20:49:02.000000000 +0100
++++ mutt-1.5.14/mutt.h	2007-03-13 16:22:15.000000000 +0100
+@@ -338,6 +338,7 @@
+   OPTBEEPNEW,
+   OPTBOUNCEDELIVERED,
+   OPTBRAILLEFRIENDLY,
++  OPTCHECKMBOXSIZE,
+   OPTCHECKNEW,
+   OPTCOLLAPSEUNREAD,
+   OPTCONFIRMAPPEND,
+--- mutt-1.5.14/PATCHES.checkmboxsize	2007-03-13 16:22:32.000000000 +0100
++++ mutt-1.5.14/PATCHES	2007-03-13 16:23:01.000000000 +0100
+@@ -0,0 +1 @@
++mutt-1.5.14-checkmboxsize.patch
+--- mutt-1.5.14/main.c.checkmboxsize	2006-07-18 03:19:27.000000000 +0200
++++ mutt-1.5.14/main.c	2007-03-13 16:22:15.000000000 +0100
+@@ -368,11 +368,6 @@
+         );
+   
+   puts (
+-#ifdef BUFFY_SIZE
+-	"+BUFFY_SIZE "
+-#else
+-	"-BUFFY_SIZE "
+-#endif
+ #ifdef EXACT_ADDRESS
+ 	"+EXACT_ADDRESS  "
+ #else

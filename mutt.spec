@@ -1,7 +1,7 @@
 Summary: A text mode mail user agent
 Name: mutt
 Version: 1.5.14
-Release: 1%{?dist}
+Release: 2%{?dist}
 Epoch: 5
 License: GPL
 Group: Applications/Internet
@@ -10,10 +10,11 @@ Source: ftp://ftp.mutt.org/pub/mutt/devel/mutt-%{version}.tar.gz
 Source2: ftp://ftp.mutt.org/pub/mutt/contrib/urlview-%{uversion}.tar.gz
 Source1: mutt_ldap_query
 Patch2: mutt-1.5.13-nodotlock.patch
-Patch3: mutt-1.5.13-muttrc.patch
+Patch3: mutt-1.5.14-muttrc.patch
 Patch4: mutt-1.5.13-manual.patch
 Patch5: urlview-0.9-default.patch
 Patch6: urlview.diff
+Patch7: mutt-1.5.14-checkmboxsize.patch
 Url: http://www.mutt.org/
 Requires: /usr/sbin/sendmail webclient mailcap
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -37,6 +38,7 @@ you are going to use.
 %patch4 -p1 -b .manual
 %patch5 -p0 -b .default
 %patch6 -p0 -b .build
+%patch7 -p1 -b .checkmboxsize
 
 install -p -m644 %{SOURCE1} mutt_ldap_query
 
@@ -115,6 +117,11 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man5/muttrc.*
 
 %changelog
+* Mon Mar 19 2007 Miroslav Lichvar <mlichvar@redhat.com> 5:1.5.14-2
+- add check_mbox_size configuration variable; if enabled, file size is used
+  instead of access time when checking for new mail
+- bind delete key to delete-char (#232601)
+
 * Fri Feb 23 2007 Miroslav Lichvar <mlichvar@redhat.com> 5:1.5.14-1
 - update to 1.5.14
 
