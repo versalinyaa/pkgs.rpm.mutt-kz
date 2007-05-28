@@ -1,7 +1,7 @@
 Summary: A text mode mail user agent
 Name: mutt
 Version: 1.5.14
-Release: 3%{?dist}
+Release: 4%{?dist}
 Epoch: 5
 License: GPL
 Group: Applications/Internet
@@ -15,6 +15,8 @@ Patch4: mutt-1.5.13-manual.patch
 Patch5: urlview-0.9-default.patch
 Patch6: urlview.diff
 Patch7: mutt-1.5.14-checkmboxsize.patch
+Patch8: mutt-apopmsgid.patch
+Patch9: mutt-gecos.patch
 Url: http://www.mutt.org/
 Requires: /usr/sbin/sendmail webclient mailcap
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -39,6 +41,8 @@ you are going to use.
 %patch5 -p0 -b .default
 %patch6 -p0 -b .build
 %patch7 -p1 -b .checkmboxsize
+%patch8 -p1 -b .apopmsgid
+%patch9 -p1 -b .gecos
 
 install -p -m644 %{SOURCE1} mutt_ldap_query
 
@@ -117,6 +121,10 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man5/muttrc.*
 
 %changelog
+* Mon May 28 2007 Miroslav Lichvar <mlichvar@redhat.com> 5:1.5.14-4
+- validate msgid in APOP authentication (CVE-2007-1558)
+- fix overflow in gecos field handling (CVE-2007-2683)
+
 * Mon Mar 19 2007 Miroslav Lichvar <mlichvar@redhat.com> 5:1.5.14-3
 - fix building
 
