@@ -1,0 +1,44 @@
+--- mutt-1.5.16/doc/Makefile.in.manual	2007-06-10 04:43:25.000000000 +0200
++++ mutt-1.5.16/doc/Makefile.in	2007-06-11 13:08:17.000000000 +0200
+@@ -481,10 +481,9 @@ muttrc.man: ../makedoc$(EXEEXT) $(top_sr
+ mutt.1: $(srcdir)/mutt.man
+ 	$(EDIT) $(srcdir)/mutt.man > $@
+ 
+-stamp-doc-xml: $(top_srcdir)/makedoc.c $(top_srcdir)/makedoc-defs.h $(top_srcdir)/init.h \
++stamp-doc-xml: ../makedoc$(EXEEXT) $(top_srcdir)/makedoc-defs.h $(top_srcdir)/init.h \
+                manual.xml.head $(top_srcdir)/functions.h $(top_srcdir)/OPS* manual.xml.tail \
+                $(srcdir)/gen-map-doc $(top_srcdir)/VERSION $(top_srcdir)/ChangeLog
+-	$(MAKE) ../makedoc$(EXEEXT) # we do not want to rebuild the documentation in tarball builds
+ 	( date=`head -n 1 $(top_srcdir)/ChangeLog | LC_ALL=C cut -d ' ' -f 1` && \
+ 	  sed -e "s/@VERSION\@/`cat $(top_srcdir)/VERSION` ($$date)/" $(srcdir)/manual.xml.head && \
+ 	  $(MAKEDOC_CPP) $(top_srcdir)/init.h | ../makedoc -s && \
+--- mutt-1.5.16/doc/manual.xml.head.manual	2007-04-04 07:37:13.000000000 +0200
++++ mutt-1.5.16/doc/manual.xml.head	2007-06-11 13:05:41.000000000 +0200
+@@ -5045,7 +5045,7 @@ changed with the <literal>edit-descripti
+ <para>
+ When you add an attachment to your mail message, Mutt searches your
+ personal mime.types file at <literal>&dollar;&lcub;HOME&rcub;/.mime.types</literal>, and then
+-the system mime.types file at <literal>/usr/local/share/mutt/mime.types</literal> or
++the system mime.types file at <literal>/usr/share/mutt/mime.types</literal> or
+ <literal>/etc/mime.types</literal>
+ </para>
+ 
+@@ -5102,7 +5102,7 @@ find an external handler.  The default s
+ is a colon delimited list set to
+ 
+ <screen>
+-${HOME}/.mailcap:/usr/local/share/mutt/mailcap:/etc/mailcap:/etc/mailcap:/usr/etc/mailcap:/usr/local/etc/mailcap
++${HOME}/.mailcap:/usr/share/mutt/mailcap:/etc/mailcap:/etc/mailcap:/usr/etc/mailcap:/usr/local/etc/mailcap
+ </screen>
+ 
+ where <literal>&dollar;HOME</literal> is your home directory.
+--- mutt-1.5.16/init.h.manual	2007-06-10 04:29:21.000000000 +0200
++++ mutt-1.5.16/init.h	2007-06-11 13:05:41.000000000 +0200
+@@ -19,7 +19,6 @@
+ 
+ #ifdef _MAKEDOC
+ # include "config.h"
+-# include "makedoc-defs.h"
+ #else
+ # include "sort.h"
+ #endif

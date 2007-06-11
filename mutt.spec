@@ -1,7 +1,7 @@
 Summary: A text mode mail user agent
 Name: mutt
-Version: 1.5.14
-Release: 4%{?dist}
+Version: 1.5.16
+Release: 1%{?dist}
 Epoch: 5
 License: GPL
 Group: Applications/Internet
@@ -10,13 +10,10 @@ Source: ftp://ftp.mutt.org/pub/mutt/devel/mutt-%{version}.tar.gz
 Source2: ftp://ftp.mutt.org/pub/mutt/contrib/urlview-%{uversion}.tar.gz
 Source1: mutt_ldap_query
 Patch2: mutt-1.5.13-nodotlock.patch
-Patch3: mutt-1.5.14-muttrc.patch
-Patch4: mutt-1.5.13-manual.patch
+Patch3: mutt-1.5.16-muttrc.patch
+Patch4: mutt-1.5.16-manual.patch
 Patch5: urlview-0.9-default.patch
 Patch6: urlview.diff
-Patch7: mutt-1.5.14-checkmboxsize.patch
-Patch8: mutt-apopmsgid.patch
-Patch9: mutt-gecos.patch
 Url: http://www.mutt.org/
 Requires: /usr/sbin/sendmail webclient mailcap
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -40,15 +37,13 @@ you are going to use.
 %patch4 -p1 -b .manual
 %patch5 -p0 -b .default
 %patch6 -p0 -b .build
-%patch7 -p1 -b .checkmboxsize
-%patch8 -p1 -b .apopmsgid
-%patch9 -p1 -b .gecos
 
 install -p -m644 %{SOURCE1} mutt_ldap_query
 
 %build
 %configure \
 	--enable-pop --enable-imap \
+	--enable-smtp \
 	--with-gnutls \
 	--with-gss \
 	--with-sasl \
@@ -85,7 +80,7 @@ echo "# Local configuration for Mutt." > $RPM_BUILD_ROOT%{_sysconfdir}/Muttrc.lo
 
 cd urlview-%{uversion}
 install urlview url_handler.sh $RPM_BUILD_ROOT%{_bindir}
-install -m 644 urlview.man $RPM_BUILD_ROOT%{_mandir}/man1/urlview.1
+install -p -m 644 urlview.man $RPM_BUILD_ROOT%{_mandir}/man1/urlview.1
 mkdir -p doc/urlview
 cp -p AUTHORS ChangeLog COPYING README sample.urlview \
   doc/urlview
@@ -121,6 +116,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man5/muttrc.*
 
 %changelog
+* Mon Jun 11 2007 Miroslav Lichvar <mlichvar@redhat.com> 5:1.5.16-1
+- update to 1.5.16
+
 * Mon May 28 2007 Miroslav Lichvar <mlichvar@redhat.com> 5:1.5.14-4
 - validate msgid in APOP authentication (CVE-2007-1558)
 - fix overflow in gecos field handling (CVE-2007-2683)
