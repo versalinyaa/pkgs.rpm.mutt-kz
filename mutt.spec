@@ -1,42 +1,37 @@
 Summary: A text mode mail user agent
 Name: mutt
 Version: 1.5.16
-Release: 1%{?dist}
+Release: 2%{?dist}
 Epoch: 5
 License: GPL
 Group: Applications/Internet
 Source: ftp://ftp.mutt.org/pub/mutt/devel/mutt-%{version}.tar.gz
-%define uversion 0.9
-Source2: ftp://ftp.mutt.org/pub/mutt/contrib/urlview-%{uversion}.tar.gz
 Source1: mutt_ldap_query
 Patch2: mutt-1.5.13-nodotlock.patch
 Patch3: mutt-1.5.16-muttrc.patch
 Patch4: mutt-1.5.16-manual.patch
-Patch5: urlview-0.9-default.patch
-Patch6: urlview.diff
 Url: http://www.mutt.org/
-Requires: /usr/sbin/sendmail webclient mailcap
+Requires: mailcap urlview
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildRequires: /usr/sbin/sendmail
 BuildRequires: cyrus-sasl-devel db4-devel gnutls-devel krb5-devel ncurses-devel
-BuildRequires: libidn-devel gettext docbook-style-xsl libxslt lynx
+BuildRequires: libidn-devel gettext
+# required to build documentation
+BuildRequires: docbook-style-xsl libxslt lynx
 
 %description
-Mutt is a text-mode mail user agent. Mutt supports color, threading,
-arbitrary key remapping, and a lot of customization.
-
-You should install mutt if you have used it in the past and you prefer
-it, or if you are new to mail programs and have not decided which one
-you are going to use.
+Mutt is a small but very powerful text-based MIME mail client.  Mutt
+is highly configurable, and is well suited to the mail power user with
+advanced features like key bindings, keyboard macros, mail threading,
+regular expression searches and a powerful pattern matching language
+for selecting groups of messages.
 
 %prep
-%setup -q -a 2
+%setup -q
 # Thou shalt use fcntl, and only fcntl
 %patch2 -p1 -b .nodl
 %patch3 -p1 -b .muttrc
 %patch4 -p1 -b .manual
-%patch5 -p0 -b .default
-%patch6 -p0 -b .build
 
 install -p -m644 %{SOURCE1} mutt_ldap_query
 
@@ -51,10 +46,6 @@ install -p -m644 %{SOURCE1} mutt_ldap_query
 	--enable-inodesort \
 	--enable-hcache \
 	--with-docdir=%{_docdir}/%{name}-%{version}
-make %{?_smp_mflags}
-
-cd urlview-%{uversion}
-%configure
 make %{?_smp_mflags}
 
 %install
@@ -78,14 +69,6 @@ EOF
 
 echo "# Local configuration for Mutt." > $RPM_BUILD_ROOT%{_sysconfdir}/Muttrc.local
 
-cd urlview-%{uversion}
-install urlview url_handler.sh $RPM_BUILD_ROOT%{_bindir}
-install -p -m 644 urlview.man $RPM_BUILD_ROOT%{_mandir}/man1/urlview.1
-mkdir -p doc/urlview
-cp -p AUTHORS ChangeLog COPYING README sample.urlview \
-  doc/urlview
-cd ..
-
 # remove unpackaged files from the buildroot
 rm -f $RPM_BUILD_ROOT%{_sysconfdir}/{*.dist,mime.types}
 rm -f $RPM_BUILD_ROOT%{_bindir}/{flea,muttbug}
@@ -104,18 +87,17 @@ rm -rf $RPM_BUILD_ROOT
 %doc COPYRIGHT ChangeLog GPL NEWS README* UPDATING mutt_ldap_query
 %doc contrib/*.rc contrib/sample.* contrib/ca-bundle.crt contrib/colors.*
 %doc doc/manual.txt doc/smime-notes.txt
-%doc urlview-%{uversion}/doc/urlview
 %{_bindir}/mutt
 %{_bindir}/pgpring
 %{_bindir}/pgpewrap
 %{_bindir}/smime_keys
-%{_bindir}/urlview
-%{_bindir}/url_handler.sh
-%{_mandir}/man1/urlview.*
 %{_mandir}/man1/mutt.*
 %{_mandir}/man5/muttrc.*
 
 %changelog
+* Wed Jul 11 2007 Miroslav Lichvar <mlichvar@redhat.com> 5:1.5.16-2
+- split urlview off, fix requires and description (#226167)
+
 * Mon Jun 11 2007 Miroslav Lichvar <mlichvar@redhat.com> 5:1.5.16-1
 - update to 1.5.16
 
