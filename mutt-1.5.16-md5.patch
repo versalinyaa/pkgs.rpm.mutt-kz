@@ -1144,3 +1144,21 @@ diff -r 4ade2517703a -r 9cfb5ac98e26 imap/auth_cram.c
 +  md5_process_bytes (response, MD5_DIGEST_LEN, &ctx);
 +  md5_finish_ctx (&ctx, response);
  }
+# HG changeset patch
+# User Emanuele Giaquinta
+# Date 1189794927 25200
+# Node ID c699e5847630f6c9a2207d87d7f933a06b9d9e87
+# Parent  154417d57b9da5e488108887b3061a5322de8dbd
+The new MD5 code needs AC_C_BIGENDIAN on big-endian systems
+
+diff -r 154417d57b9d -r c699e5847630 configure.ac
+--- a/configure.ac	Thu Sep 13 09:39:47 2007 -0700
++++ b/configure.ac	Fri Sep 14 11:35:27 2007 -0700
+@@ -39,6 +39,7 @@ AC_CHECK_TOOL(AR, ar, ar)
+ 
+ AC_C_INLINE
+ AC_C_CONST
++AC_C_BIGENDIAN
+ 
+ AC_SYS_LARGEFILE
+ AC_FUNC_FSEEKO

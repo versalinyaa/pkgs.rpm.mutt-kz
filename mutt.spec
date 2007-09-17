@@ -1,7 +1,7 @@
 Summary: A text mode mail user agent
 Name: mutt
 Version: 1.5.16
-Release: 3%{?dist}
+Release: 4%{?dist}
 Epoch: 5
 # The entire source code is GPLv2+ except
 # pgpewrap.c setenv.c sha1.c wcwidth.c which are Public Domain
@@ -101,6 +101,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man5/muttrc.*
 
 %changelog
+* Mon Sep 17 2007 Miroslav Lichvar <mlichvar@redhat.com> 5:1.5.16-4
+- fix md5 on big-endian systems
+
 * Tue Aug 28 2007 Miroslav Lichvar <mlichvar@redhat.com> 5:1.5.16-3
 - replace md5 implementation
 - update license tag
