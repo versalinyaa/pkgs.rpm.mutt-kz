@@ -1,7 +1,7 @@
 Summary: A text mode mail user agent
 Name: mutt
-Version: 1.5.16
-Release: 4%{?dist}
+Version: 1.5.17
+Release: 1%{?dist}
 Epoch: 5
 # The entire source code is GPLv2+ except
 # pgpewrap.c setenv.c sha1.c wcwidth.c which are Public Domain
@@ -9,10 +9,9 @@ License: GPLv2+ and Public Domain
 Group: Applications/Internet
 Source: ftp://ftp.mutt.org/pub/mutt/devel/mutt-%{version}.tar.gz
 Source1: mutt_ldap_query
-Patch1: mutt-1.5.16-md5.patch
 Patch2: mutt-1.5.13-nodotlock.patch
 Patch3: mutt-1.5.16-muttrc.patch
-Patch4: mutt-1.5.16-manual.patch
+Patch4: mutt-1.5.17-manual.patch
 Url: http://www.mutt.org/
 Requires: mailcap urlview
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -21,7 +20,6 @@ BuildRequires: cyrus-sasl-devel db4-devel gnutls-devel krb5-devel ncurses-devel
 BuildRequires: libidn-devel gettext
 # required to build documentation
 BuildRequires: docbook-style-xsl libxslt lynx
-BuildRequires: automake autoconf
 
 %description
 Mutt is a small but very powerful text-based MIME mail client.  Mutt
@@ -32,8 +30,6 @@ for selecting groups of messages.
 
 %prep
 %setup -q
-%patch1 -p1 -b .md5
-./prepare -V
 # Thou shalt use fcntl, and only fcntl
 %patch2 -p1 -b .nodl
 %patch3 -p1 -b .muttrc
@@ -101,6 +97,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man5/muttrc.*
 
 %changelog
+* Fri Nov 02 2007 Miroslav Lichvar <mlichvar@redhat.com> 5:1.5.17-1
+- update to 1.5.17
+
 * Mon Sep 17 2007 Miroslav Lichvar <mlichvar@redhat.com> 5:1.5.16-4
 - fix md5 on big-endian systems
 
