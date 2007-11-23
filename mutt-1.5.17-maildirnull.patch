@@ -1,0 +1,20 @@
+# HG changeset patch
+# User Rocco Rutte <pdmef@gmx.net>
+# Date 1194084739 -3600
+# Branch HEAD
+# Node ID 0c054faeb28595ef4a252c38319fa1f1f376b68e
+# Parent  cc5de08f46129c447901f7f79e571105eb0d81c1
+Check Maildir for not being NULL when expanding '='-paths. Closes #2977.
+
+diff -r cc5de08f4612 -r 0c054faeb285 muttlib.c
+--- a/muttlib.c	Fri Nov 02 16:55:55 2007 -0700
++++ b/muttlib.c	Sat Nov 03 11:12:19 2007 +0100
+@@ -397,7 +397,7 @@ char *_mutt_expand_path (char *s, size_t
+ 	  strfcpy (p, NONULL (Maildir), sizeof (p));
+ 	else
+ #endif
+-	if (Maildir[strlen (Maildir) - 1] == '/')
++	if (Maildir && *Maildir && Maildir[strlen (Maildir) - 1] == '/')
+ 	  strfcpy (p, NONULL (Maildir), sizeof (p));
+ 	else
+ 	  snprintf (p, sizeof (p), "%s/", NONULL (Maildir));

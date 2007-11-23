@@ -1,0 +1,113 @@
+# HG changeset patch
+# User Rocco Rutte <pdmef@gmx.net>
+# Date 1194196465 -3600
+# Branch HEAD
+# Node ID 6248b3c04f61fcbd447bed96030cb7a4887b69b6
+# Parent  2157b46eb93823e5c38136fe49c9b16c1475f27b
+Prevent mailto parsing buffer overflow by ignoring too long header.
+If they're longer than our buffer, we can't turn it into a header to
+be parsed by mutt_parse_rfc822_line() anyway, so we bail out in this
+case. Also make main() catchup mailto parsing errors. Closes #2980.
+
+diff -r 2157b46eb938 -r 6248b3c04f61 main.c
+--- a/main.c	Sun Nov 04 17:02:56 2007 +0100
++++ b/main.c	Sun Nov 04 18:14:25 2007 +0100
+@@ -829,7 +829,15 @@ int main (int argc, char **argv)
+       for (i = optind; i < argc; i++)
+       {
+ 	if (url_check_scheme (argv[i]) == U_MAILTO)
+-	  url_parse_mailto (msg->env, &bodytext, argv[i]);
++	{
++	  if (url_parse_mailto (msg->env, &bodytext, argv[i]) < 0)
++	  {
++	    if (!option (OPTNOCURSES))
++	      mutt_endwin (NULL);
++	    fputs (_("Failed to parse mailto: link\n"), stderr);
++	    exit (1);
++	  }
++	}
+ 	else
+ 	  msg->env->to = rfc822_parse_adrlist (msg->env->to, argv[i]);
+       }
+diff -r 2157b46eb938 -r 6248b3c04f61 url.c
+--- a/url.c	Sun Nov 04 17:02:56 2007 +0100
++++ b/url.c	Sun Nov 04 18:14:25 2007 +0100
+@@ -217,7 +217,7 @@ int url_parse_mailto (ENVELOPE *e, char 
+   char *tag, *value;
+   char scratch[HUGE_STRING];
+ 
+-  int taglen;
++  int taglen, rc = 0;
+ 
+   LIST *last = NULL;
+   
+@@ -250,19 +250,25 @@ int url_parse_mailto (ENVELOPE *e, char 
+       if (body)
+ 	mutt_str_replace (body, value);
+     }
+-    else 
+-    {
+-      taglen = strlen (tag);
+-      /* mutt_parse_rfc822_line makes some assumptions */
++    else if ((taglen = mutt_strlen (tag)) <= sizeof (scratch) - 2)
++    {
++      /* only try to parse if we can format it as header for
++       * mutt_parse_rfc822_line (tag fits in scratch) */
+       snprintf (scratch, sizeof (scratch), "%s: %s", tag, value);
+       scratch[taglen] = '\0';
+       value = &scratch[taglen+1];
+       SKIPWS (value);
+       mutt_parse_rfc822_line (e, NULL, scratch, value, 1, 0, 0, &last);
+     }
+-  }
+-  
++    else
++    {
++      rc = -1;
++      goto out;
++    }
++  }
++
++out:
+   FREE (&tmp);
+-  return 0;
+-}
+-
++  return rc;
++}
++
+# HG changeset patch
+# User cypher@conuropsis.org
+# Date 1194197244 -3600
+# Branch HEAD
+# Node ID ab676b9f0c040644f27c1fb862a7d67171c553c7
+# Parent  6248b3c04f61fcbd447bed96030cb7a4887b69b6
+Use strtok_r() to parse mailto: links, not strtok().
+In case a headers needs to call mutt_parse_references() which uses
+strtok(), too, later headers will be silently discarded. Closes #2968.
+
+diff -r 6248b3c04f61 -r ab676b9f0c04 url.c
+--- a/url.c	Sun Nov 04 18:14:25 2007 +0100
++++ b/url.c	Sun Nov 04 18:27:24 2007 +0100
+@@ -211,7 +211,7 @@ int url_ciss_tostring (ciss_url_t* ciss,
+ 
+ int url_parse_mailto (ENVELOPE *e, char **body, const char *src)
+ {
+-  char *t;
++  char *t, *p;
+   char *tmp;
+   char *headers;
+   char *tag, *value;
+@@ -233,9 +233,9 @@ int url_parse_mailto (ENVELOPE *e, char 
+   url_pct_decode (tmp);
+   e->to = rfc822_parse_adrlist (e->to, tmp);
+ 
+-  tag = headers ? strtok (headers, "&") : NULL;
+-  
+-  for (; tag; tag = strtok (NULL, "&"))
++  tag = headers ? strtok_r (headers, "&", &p) : NULL;
++  
++  for (; tag; tag = strtok_r (NULL, "&", &p))
+   {
+     if ((value = strchr (tag, '=')))
+       *value++ = '\0';

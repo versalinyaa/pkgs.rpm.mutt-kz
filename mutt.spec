@@ -1,7 +1,7 @@
 Summary: A text mode mail user agent
 Name: mutt
 Version: 1.5.17
-Release: 1%{?dist}
+Release: 2%{?dist}
 Epoch: 5
 # The entire source code is GPLv2+ except
 # pgpewrap.c setenv.c sha1.c wcwidth.c which are Public Domain
@@ -12,6 +12,10 @@ Source1: mutt_ldap_query
 Patch2: mutt-1.5.13-nodotlock.patch
 Patch3: mutt-1.5.16-muttrc.patch
 Patch4: mutt-1.5.17-manual.patch
+Patch5: mutt-1.5.17-maildirnull.patch
+Patch6: mutt-1.5.17-updating.patch
+Patch7: mutt-1.5.17-mailto.patch
+Patch8: mutt-1.5.17-batchsend.patch
 Url: http://www.mutt.org/
 Requires: mailcap urlview
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -34,6 +38,10 @@ for selecting groups of messages.
 %patch2 -p1 -b .nodl
 %patch3 -p1 -b .muttrc
 %patch4 -p1 -b .manual
+%patch5 -p1 -b .maildirnull
+%patch6 -p1 -b .updating
+%patch7 -p1 -b .mailto
+%patch8 -p1 -b .batchsend
 
 install -p -m644 %{SOURCE1} mutt_ldap_query
 
@@ -97,6 +105,13 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man5/muttrc.*
 
 %changelog
+* Fri Nov 23 2007 Miroslav Lichvar <mlichvar@redhat.com> 5:1.5.17-2
+- don't ignore $from in batch send mode (#392861)
+- check Maildir for not being NULL when expanding '='-paths
+- prevent mailto parsing buffer overflow by ignoring too long header
+- use strtok_r() to parse mailto: links, not strtok()
+- update UPDATING
+
 * Fri Nov 02 2007 Miroslav Lichvar <mlichvar@redhat.com> 5:1.5.17-1
 - update to 1.5.17
 

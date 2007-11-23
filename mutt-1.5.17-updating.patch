@@ -1,0 +1,93 @@
+# HG changeset patch
+# User Rocco Rutte <pdmef@gmx.net>
+# Date 1194192176 -3600
+# Branch HEAD
+# Node ID 2157b46eb93823e5c38136fe49c9b16c1475f27b
+# Parent  1416714ec4d1013f5572e49e480df8b9de2bdee0
+Add 1.5.17 to UPDATING
+
+diff -r 1416714ec4d1 -r 2157b46eb938 UPDATING
+--- a/UPDATING	Sun Nov 04 17:01:12 2007 +0100
++++ b/UPDATING	Sun Nov 04 17:02:56 2007 +0100
+@@ -3,6 +3,8 @@ mutt. Please read this file carefully wh
+ 
+ The keys used are:
+   !: modified feature, -: deleted feature, +: new feature
++
++1.5.17 (2007-11-01)
+ 
+   ! --enable-exact-address works again
+   + next-unread-mailbox
+# HG changeset patch
+# User Rocco Rutte <pdmef@gmx.net>
+# Date 1194199833 -3600
+# Branch HEAD
+# Node ID 02e8b9c7bdc61250c9546de1abc0cb296953274c
+# Parent  ab676b9f0c040644f27c1fb862a7d67171c553c7
+Fixup UPDATING for 1.5.16/1.5.17
+
+diff -r ab676b9f0c04 -r 02e8b9c7bdc6 UPDATING
+--- a/UPDATING	Sun Nov 04 18:27:24 2007 +0100
++++ b/UPDATING	Sun Nov 04 19:10:33 2007 +0100
+@@ -4,14 +4,18 @@ The keys used are:
+ The keys used are:
+   !: modified feature, -: deleted feature, +: new feature
+ 
+-1.5.17 (2007-11-01)
++1.5.17 (2007-11-01):
+ 
+   ! --enable-exact-address works again
++
++1.5.16 (2007-06-09):
++
+   + next-unread-mailbox
+   + $message_cache_clean (clean cache on sync)
+-  + %P expando for $pager_format
++  + $smtp_pass
++  ! $header_cache_compress defaults to yes
+ 
+-1.5.15 (2007-04-06)
++1.5.15 (2007-04-06):
+ 
+   - $imap_home_namespace (useless clutter)
+   + $check_mbox_size (use size change instead of atime for new mail)
+# HG changeset patch
+# User Rocco Rutte <pdmef@gmx.net>
+# Date 1195640183 -3600
+# Branch HEAD
+# Node ID 849daa6be9f56dc0e3505b9c7e9d18d1116a53cd
+# Parent  96f931ae0b2298134f5c3c1ac283d5bd6d7b287f
+Remove raw utf-8 char in UPDATING to make it ascii again
+
+diff -r 96f931ae0b22 -r 849daa6be9f5 UPDATING
+--- a/UPDATING	Tue Nov 20 19:46:52 2007 +0100
++++ b/UPDATING	Wed Nov 21 11:16:23 2007 +0100
+@@ -28,7 +28,7 @@ 1.5.15 (2007-04-06):
+   + $save_history, $history_file (save history across sessions)
+   + $smtp_url (ESMTP relay support)
+   + $crypt_use_pka (use GPGME PKA signature verification)
+-  ! format pipe support: format strings ending in | are filtered
++  ! format pipe support: format strings ending in | are filtered
+ 
+ 1.5.13 (2006-08-14):
+ 
+# HG changeset patch
+# User Rocco Rutte <pdmef@gmx.net>
+# Date 1195660074 -3600
+# Branch HEAD
+# Node ID 309ab3a63d915dd50921ec23d4f73e7b87985527
+# Parent  b8d811e5931eee623dfd5c040bade7ec9e1554a9
+Add UPDATING entry for $check_mbox_size
+
+diff -r b8d811e5931e -r 309ab3a63d91 UPDATING
+--- a/UPDATING	Wed Nov 21 14:46:43 2007 +0100
++++ b/UPDATING	Wed Nov 21 16:47:54 2007 +0100
+@@ -29,6 +29,8 @@ 1.5.15 (2007-04-06):
+   + $smtp_url (ESMTP relay support)
+   + $crypt_use_pka (use GPGME PKA signature verification)
+   ! format pipe support: format strings ending in | are filtered
++  ! buffy size is configurable at runtime (no --enable-buffy-size
++    configure option, new $check_mbox_size variable)
+ 
+ 1.5.13 (2006-08-14):
+ 

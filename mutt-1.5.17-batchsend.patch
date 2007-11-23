@@ -1,0 +1,13 @@
+diff -up mutt-1.5.17/send.c.batchsend mutt-1.5.17/send.c
+--- mutt-1.5.17/send.c.batchsend	2007-07-26 21:43:39.000000000 +0200
++++ mutt-1.5.17/send.c	2007-11-23 12:26:28.000000000 +0100
+@@ -1212,7 +1212,8 @@ ci_send_message (int flags,		/* send mod
+   if (!msg->env->from && option (OPTUSEFROM) && !(flags & (SENDPOSTPONED|SENDRESEND)))
+   {
+     msg->env->from = mutt_default_from ();
+-    killfrom = 1;	/* $use_from will be re-checked after send-hooks */
++    if (!(flags & SENDBATCH))
++      killfrom = 1;	/* $use_from will be re-checked after send-hooks */
+   }
+ 
+   if (flags & SENDBATCH) 
