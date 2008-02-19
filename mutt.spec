@@ -1,7 +1,7 @@
 Summary: A text mode mail user agent
 Name: mutt
 Version: 1.5.17
-Release: 2%{?dist}
+Release: 3%{?dist}
 Epoch: 5
 # The entire source code is GPLv2+ except
 # pgpewrap.c setenv.c sha1.c wcwidth.c which are Public Domain
@@ -105,6 +105,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man5/muttrc.*
 
 %changelog
+* Tue Feb 19 2008 Fedora Release Engineering <rel-eng@fedoraproject.org> - 5:1.5.17-3
+- Autorebuild for GCC 4.3
+
 * Fri Nov 23 2007 Miroslav Lichvar <mlichvar@redhat.com> 5:1.5.17-2
 - don't ignore $from in batch send mode (#392861)
 - check Maildir for not being NULL when expanding '='-paths
