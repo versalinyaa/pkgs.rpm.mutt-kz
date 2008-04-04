@@ -26,12 +26,9 @@ cat $TMPFILE | awk '
 	/^mail:/ {MAIL=substr($0,6)}
 	/^cn:/ {NAME=substr($0,4)}
 	/^roomNumber:/ {ROOM=substr($0,12)}
-	/^$/ { MAIL=gensub("^ ","",g,MAIL) }
-	/^$/ { MAIL=gensub(" $","",g,MAIL) }
-	/^$/ { NAME=gensub("^ ","",g,NAME) }
-	/^$/ { NAME=gensub(" $","",g,NAME) }
-	/^$/ { ROOM=gensub("^ ","",g,ROOM) }
-	/^$/ { ROOM=gensub(" $","",g,ROOM) }
+	/^$/ { MAIL=gensub("^ *| *$","","g",MAIL) }
+	/^$/ { NAME=gensub("^ *| *$","","g",NAME) }
+	/^$/ { ROOM=gensub("^ *| *$","","g",ROOM) }
 	/^$/ { if(length(NAME) > 0) print MAIL "\t" NAME "\t" ROOM}
 	/^$/ { NAME = "" }
 ' > $RESULTS

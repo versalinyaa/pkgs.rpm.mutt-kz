@@ -1,7 +1,21 @@
+%bcond_with debug
+%bcond_without imap
+%bcond_without pop
+%bcond_without smtp
+%bcond_without gnutls
+%bcond_without gss
+%bcond_without sasl
+%bcond_without idn
+%bcond_without hcache
+%bcond_without bdb
+%bcond_with qdbm
+%bcond_with gdbm
+%bcond_with gpgme
+
 Summary: A text mode mail user agent
 Name: mutt
 Version: 1.5.17
-Release: 3%{?dist}
+Release: 4%{?dist}
 Epoch: 5
 # The entire source code is GPLv2+ except
 # pgpewrap.c setenv.c sha1.c wcwidth.c which are Public Domain
@@ -16,14 +30,31 @@ Patch5: mutt-1.5.17-maildirnull.patch
 Patch6: mutt-1.5.17-updating.patch
 Patch7: mutt-1.5.17-mailto.patch
 Patch8: mutt-1.5.17-batchsend.patch
+Patch9: mutt-1.5.17-gnutls.patch
+Patch10: mutt-1.5.17-smimekeys.patch
 Url: http://www.mutt.org/
 Requires: mailcap urlview
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildRequires: /usr/sbin/sendmail
-BuildRequires: cyrus-sasl-devel db4-devel gnutls-devel krb5-devel ncurses-devel
-BuildRequires: libidn-devel gettext
+BuildRequires: ncurses-devel
+BuildRequires: gettext
 # required to build documentation
 BuildRequires: docbook-style-xsl libxslt lynx
+
+%if %{with hcache}
+%{?with_bdb:BuildRequires: db4-devel}
+%{?with_qdbm:BuildRequires: qdbm-devel}
+%{?with_gdbm:BuildRequires: gdbm-devel}
+%endif
+%if %{with imap} || %{with pop} || %{with smtp}
+%{?with_gnutls:BuildRequires: gnutls-devel}
+%{?with_sasl:BuildRequires: cyrus-sasl-devel}
+%endif
+%if %{with imap}
+%{?with_gss:BuildRequires: krb5-devel}
+%endif
+%{?with_idn:BuildRequires: libidn-devel}
+%{?with_gpgme:BuildRequires: gpgme-devel}
 
 %description
 Mutt is a small but very powerful text-based MIME mail client.  Mutt
@@ -42,20 +73,34 @@ for selecting groups of messages.
 %patch6 -p1 -b .updating
 %patch7 -p1 -b .mailto
 %patch8 -p1 -b .batchsend
+%patch9 -p1 -b .gnutls
+%patch10 -p1 -b .smimekeys
 
 install -p -m644 %{SOURCE1} mutt_ldap_query
 
 %build
 %configure \
-	--enable-pop --enable-imap \
-	--enable-smtp \
-	--with-gnutls \
-	--with-gss \
-	--with-sasl \
-	--with-idn \
-	--enable-inodesort \
-	--enable-hcache \
-	--with-docdir=%{_docdir}/%{name}-%{version}
+		--enable-inodesort \
+%{?with_debug:	--enable-debug}\
+%{?with_pop:	--enable-pop}\
+%{?with_imap:	--enable-imap} \
+%{?with_smtp:	--enable-smtp} \
+%if %{with hcache}
+		--enable-hcache \
+%{!?with_gdbm:	--without-gdbm} \
+%{!?with_qdbm:	--without-qdbm} \
+%endif
+%if %{with imap} || %{with pop} || %{with smtp}
+%{?with_gnutls:	--with-gnutls} \
+%{?with_sasl:	--with-sasl} \
+%endif
+%if %{with imap}
+%{?with_gss: 	--with-gss} \
+%endif
+%{!?with_idn:	--without-idn} \
+%{?with_gpgme:	--enable-gpgme} \
+		--with-docdir=%{_docdir}/%{name}-%{version}
+
 make %{?_smp_mflags}
 
 %install
@@ -105,6 +150,13 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man5/muttrc.*
 
 %changelog
+* Fri Apr 04 2008 Miroslav Lichvar <mlichvar@redhat.com> 5:1.5.17-4
+- fix sending long commands when using gnutls (#438275)
+- glob tilde in smime_keys (#424311)
+- fix awk script in mutt_ldap_query
+- force building with libdb
+- make enabling/disabling features in spec easier
+
 * Tue Feb 19 2008 Fedora Release Engineering <rel-eng@fedoraproject.org> - 5:1.5.17-3
 - Autorebuild for GCC 4.3
 
