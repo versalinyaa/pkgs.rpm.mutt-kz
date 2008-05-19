@@ -14,8 +14,8 @@
 
 Summary: A text mode mail user agent
 Name: mutt
-Version: 1.5.17
-Release: 4%{?dist}
+Version: 1.5.18
+Release: 1%{?dist}
 Epoch: 5
 # The entire source code is GPLv2+ except
 # pgpewrap.c setenv.c sha1.c wcwidth.c which are Public Domain
@@ -24,14 +24,8 @@ Group: Applications/Internet
 Source: ftp://ftp.mutt.org/pub/mutt/devel/mutt-%{version}.tar.gz
 Source1: mutt_ldap_query
 Patch2: mutt-1.5.13-nodotlock.patch
-Patch3: mutt-1.5.16-muttrc.patch
-Patch4: mutt-1.5.17-manual.patch
-Patch5: mutt-1.5.17-maildirnull.patch
-Patch6: mutt-1.5.17-updating.patch
-Patch7: mutt-1.5.17-mailto.patch
-Patch8: mutt-1.5.17-batchsend.patch
-Patch9: mutt-1.5.17-gnutls.patch
-Patch10: mutt-1.5.17-smimekeys.patch
+Patch3: mutt-1.5.18-muttrc.patch
+Patch4: mutt-1.5.18-manual.patch
 Url: http://www.mutt.org/
 Requires: mailcap urlview
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -69,18 +63,11 @@ for selecting groups of messages.
 %patch2 -p1 -b .nodl
 %patch3 -p1 -b .muttrc
 %patch4 -p1 -b .manual
-%patch5 -p1 -b .maildirnull
-%patch6 -p1 -b .updating
-%patch7 -p1 -b .mailto
-%patch8 -p1 -b .batchsend
-%patch9 -p1 -b .gnutls
-%patch10 -p1 -b .smimekeys
 
 install -p -m644 %{SOURCE1} mutt_ldap_query
 
 %build
 %configure \
-		--enable-inodesort \
 %{?with_debug:	--enable-debug}\
 %{?with_pop:	--enable-pop}\
 %{?with_imap:	--enable-imap} \
@@ -150,6 +137,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man5/muttrc.*
 
 %changelog
+* Mon May 19 2008 Miroslav Lichvar <mlichvar@redhat.com> 5:1.5.18-1
+- update to 1.5.18
+
 * Fri Apr 04 2008 Miroslav Lichvar <mlichvar@redhat.com> 5:1.5.17-4
 - fix sending long commands when using gnutls (#438275)
 - glob tilde in smime_keys (#424311)
