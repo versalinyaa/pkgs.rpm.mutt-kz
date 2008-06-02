@@ -15,7 +15,7 @@
 Summary: A text mode mail user agent
 Name: mutt
 Version: 1.5.18
-Release: 1%{?dist}
+Release: 2%{?dist}
 Epoch: 5
 # The entire source code is GPLv2+ except
 # pgpewrap.c setenv.c sha1.c wcwidth.c which are Public Domain
@@ -26,6 +26,8 @@ Source1: mutt_ldap_query
 Patch2: mutt-1.5.13-nodotlock.patch
 Patch3: mutt-1.5.18-muttrc.patch
 Patch4: mutt-1.5.18-manual.patch
+Patch5: mutt-1.5.18-intr.patch
+Patch6: mutt-1.5.18-imap.patch
 Url: http://www.mutt.org/
 Requires: mailcap urlview
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -63,6 +65,8 @@ for selecting groups of messages.
 %patch2 -p1 -b .nodl
 %patch3 -p1 -b .muttrc
 %patch4 -p1 -b .manual
+%patch5 -p1 -b .intr
+%patch6 -p1 -b .imap
 
 install -p -m644 %{SOURCE1} mutt_ldap_query
 
@@ -137,6 +141,10 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man5/muttrc.*
 
 %changelog
+* Mon Jun 02 2008 Miroslav Lichvar <mlichvar@redhat.com> 5:1.5.18-2
+- allow interrupts when reading, writing or closing sockets (#447887)
+- fix possible crash when opening IMAP mailbox
+
 * Mon May 19 2008 Miroslav Lichvar <mlichvar@redhat.com> 5:1.5.18-1
 - update to 1.5.18
 

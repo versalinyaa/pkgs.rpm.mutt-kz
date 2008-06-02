@@ -1,0 +1,20 @@
+# HG changeset patch
+# User Rocco Rutte <pdmef@gmx.net>
+# Date 1211437223 25200
+# Branch HEAD
+# Node ID bba92e40144004664f0ff20dddc82d253f5a656d
+# Parent  51c494a2e735c8f6a8338b26d932b54c5d8a9a7d
+Guard idata->mailbox read in imap_mailbox_state. Closes #3057.
+
+diff -r 51c494a2e735 -r bba92e401440 imap/browse.c
+--- a/imap/browse.c	Wed May 21 22:59:22 2008 -0700
++++ b/imap/browse.c	Wed May 21 23:20:23 2008 -0700
+@@ -228,7 +228,7 @@ int imap_mailbox_state (const char* path
+     return -1;
+   }
+ 
+-  if (!imap_mxcmp(mx.mbox, idata->mailbox))
++  if (idata->ctx && !imap_mxcmp(mx.mbox, idata->mailbox))
+   {
+     state->new = idata->ctx->new;
+     state->messages = idata->ctx->msgcount;
