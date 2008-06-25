@@ -15,7 +15,7 @@
 Summary: A text mode mail user agent
 Name: mutt
 Version: 1.5.18
-Release: 2%{?dist}
+Release: 3%{?dist}
 Epoch: 5
 # The entire source code is GPLv2+ except
 # pgpewrap.c setenv.c sha1.c wcwidth.c which are Public Domain
@@ -31,7 +31,7 @@ Patch6: mutt-1.5.18-imap.patch
 Url: http://www.mutt.org/
 Requires: mailcap urlview
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
-BuildRequires: /usr/sbin/sendmail
+BuildRequires: aspell /usr/sbin/sendmail
 BuildRequires: ncurses-devel
 BuildRequires: gettext
 # required to build documentation
@@ -141,6 +141,10 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man5/muttrc.*
 
 %changelog
+* Wed Jun 25 2008 Miroslav Lichvar <mlichvar@redhat.com> 5:1.5.18-3
+- buildrequire aspell (#452133)
+- rebuild with new gnutls
+
 * Mon Jun 02 2008 Miroslav Lichvar <mlichvar@redhat.com> 5:1.5.18-2
 - allow interrupts when reading, writing or closing sockets (#447887)
 - fix possible crash when opening IMAP mailbox
