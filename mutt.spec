@@ -15,7 +15,7 @@
 Summary: A text mode mail user agent
 Name: mutt
 Version: 1.5.18
-Release: 3%{?dist}
+Release: 4%{?dist}
 Epoch: 5
 # The entire source code is GPLv2+ except
 # pgpewrap.c setenv.c sha1.c wcwidth.c which are Public Domain
@@ -28,6 +28,7 @@ Patch3: mutt-1.5.18-muttrc.patch
 Patch4: mutt-1.5.18-manual.patch
 Patch5: mutt-1.5.18-intr.patch
 Patch6: mutt-1.5.18-imap.patch
+Patch7: mutt-1.5.18-db47.patch
 Url: http://www.mutt.org/
 Requires: mailcap urlview
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -67,6 +68,7 @@ for selecting groups of messages.
 %patch4 -p1 -b .manual
 %patch5 -p1 -b .intr
 %patch6 -p1 -b .imap
+%patch7 -p1 -b .db47
 
 install -p -m644 %{SOURCE1} mutt_ldap_query
 
@@ -141,6 +143,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man5/muttrc.*
 
 %changelog
+* Mon Jul 28 2008 Miroslav Lichvar <mlichvar@redhat.com> 5:1.5.18-4
+- rebuild with db4.7 (Robert Scheck) (#455144)
+
 * Wed Jun 25 2008 Miroslav Lichvar <mlichvar@redhat.com> 5:1.5.18-3
 - buildrequire aspell (#452133)
 - rebuild with new gnutls
