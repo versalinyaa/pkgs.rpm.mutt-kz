@@ -7,15 +7,16 @@
 %bcond_without sasl
 %bcond_without idn
 %bcond_without hcache
-%bcond_without bdb
+%bcond_without tokyocabinet
+%bcond_with bdb
 %bcond_with qdbm
 %bcond_with gdbm
 %bcond_with gpgme
 
 Summary: A text mode mail user agent
 Name: mutt
-Version: 1.5.18
-Release: 4%{?dist}
+Version: 1.5.19
+Release: 1%{?dist}
 Epoch: 5
 # The entire source code is GPLv2+ except
 # pgpewrap.c setenv.c sha1.c wcwidth.c which are Public Domain
@@ -26,9 +27,7 @@ Source1: mutt_ldap_query
 Patch2: mutt-1.5.13-nodotlock.patch
 Patch3: mutt-1.5.18-muttrc.patch
 Patch4: mutt-1.5.18-manual.patch
-Patch5: mutt-1.5.18-intr.patch
-Patch6: mutt-1.5.18-imap.patch
-Patch7: mutt-1.5.18-db47.patch
+Patch7: mutt-1.5.19-db47.patch
 Url: http://www.mutt.org/
 Requires: mailcap urlview
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -39,6 +38,7 @@ BuildRequires: gettext
 BuildRequires: docbook-style-xsl libxslt lynx
 
 %if %{with hcache}
+%{?with_tokyocabinet:BuildRequires: tokyocabinet-devel}
 %{?with_bdb:BuildRequires: db4-devel}
 %{?with_qdbm:BuildRequires: qdbm-devel}
 %{?with_gdbm:BuildRequires: gdbm-devel}
@@ -66,8 +66,6 @@ for selecting groups of messages.
 %patch2 -p1 -b .nodl
 %patch3 -p1 -b .muttrc
 %patch4 -p1 -b .manual
-%patch5 -p1 -b .intr
-%patch6 -p1 -b .imap
 %patch7 -p1 -b .db47
 
 install -p -m644 %{SOURCE1} mutt_ldap_query
@@ -80,6 +78,7 @@ install -p -m644 %{SOURCE1} mutt_ldap_query
 %{?with_smtp:	--enable-smtp} \
 %if %{with hcache}
 		--enable-hcache \
+%{!?with_tokyocabinet:	--without-tokyocabinet} \
 %{!?with_gdbm:	--without-gdbm} \
 %{!?with_qdbm:	--without-qdbm} \
 %endif
@@ -143,6 +142,11 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man5/muttrc.*
 
 %changelog
+* Wed Jan 07 2009 Miroslav Lichvar <mlichvar@redhat.com> 5:1.5.19-1
+- update to 1.5.19
+- switch hcache backend to tokyocabinet
+- drop intr patch
+
 * Mon Jul 28 2008 Miroslav Lichvar <mlichvar@redhat.com> 5:1.5.18-4
 - rebuild with db4.7 (Robert Scheck) (#455144)
 
