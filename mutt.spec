@@ -16,7 +16,7 @@
 Summary: A text mode mail user agent
 Name: mutt
 Version: 1.5.19
-Release: 1%{?dist}
+Release: 2%{?dist}
 Epoch: 5
 # The entire source code is GPLv2+ except
 # pgpewrap.c setenv.c sha1.c wcwidth.c which are Public Domain
@@ -142,6 +142,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man5/muttrc.*
 
 %changelog
+* Wed Jan 14 2009 Alex Lancaster <alexlan[AT]fedoraproject org> - 5:1.5.19-2
+- Rebuild for deps
+
 * Wed Jan 07 2009 Miroslav Lichvar <mlichvar@redhat.com> 5:1.5.19-1
 - update to 1.5.19
 - switch hcache backend to tokyocabinet
