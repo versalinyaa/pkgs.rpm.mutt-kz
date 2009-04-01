@@ -16,7 +16,7 @@
 Summary: A text mode mail user agent
 Name: mutt
 Version: 1.5.19
-Release: 3%{?dist}
+Release: 4%{?dist}
 Epoch: 5
 # The entire source code is GPLv2+ except
 # pgpewrap.c setenv.c sha1.c wcwidth.c which are Public Domain
@@ -28,6 +28,9 @@ Patch2: mutt-1.5.13-nodotlock.patch
 Patch3: mutt-1.5.18-muttrc.patch
 Patch4: mutt-1.5.18-manual.patch
 Patch7: mutt-1.5.19-db47.patch
+Patch8: mutt-1.5.19-realpath.patch
+Patch9: mutt-1.5.19-inodesort.patch
+Patch10: mutt-1.5.19-saslcb.patch
 Url: http://www.mutt.org/
 Requires: mailcap urlview
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -67,6 +70,9 @@ for selecting groups of messages.
 %patch3 -p1 -b .muttrc
 %patch4 -p1 -b .manual
 %patch7 -p1 -b .db47
+%patch8 -p1 -b .realpath
+%patch9 -p1 -b .inodesort
+%patch10 -p1 -b .saslcb
 
 install -p -m644 %{SOURCE1} mutt_ldap_query
 
@@ -142,6 +148,11 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man5/muttrc.*
 
 %changelog
+* Wed Apr 01 2009 Miroslav Lichvar <mlichvar@redhat.com> 5:1.5.19-4
+- use PATH_MAX for buffers passed to realpath (#492861)
+- unconditionally inode-sort Maildir and MH folders
+- restore connection polling callback when closing SASL connection
+
 * Wed Feb 25 2009 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 5:1.5.19-3
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_11_Mass_Rebuild
 

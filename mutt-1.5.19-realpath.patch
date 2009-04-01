@@ -1,0 +1,32 @@
+# HG changeset patch
+# User Miroslav Lichvar <mlichvar@redhat.com>
+# Date 1238589215 -7200
+# Branch HEAD
+# Node ID 8205a12329d395b87eeb890cb86d28e761e83992
+# Parent  47c64fd9ac708fee9f4969e571c42e105287596e
+Use PATH_MAX for buffers passed to realpath(3) as we're supposed to
+
+diff -r 47c64fd9ac70 -r 8205a12329d3 hcache.c
+--- a/hcache.c	Wed Apr 01 13:16:35 2009 +0200
++++ b/hcache.c	Wed Apr 01 14:33:35 2009 +0200
+@@ -836,7 +836,7 @@
+    * to ensure equivalent paths share the hcache */
+   if (stat (folder, &st) == 0)
+   {
+-    p = safe_malloc (_POSIX_PATH_MAX+1);
++    p = safe_malloc (PATH_MAX+1);
+     if (!realpath (folder, p))
+       mutt_str_replace (&p, folder);
+   } else
+diff -r 47c64fd9ac70 -r 8205a12329d3 muttlib.c
+--- a/muttlib.c	Wed Apr 01 13:16:35 2009 +0200
++++ b/muttlib.c	Wed Apr 01 14:33:35 2009 +0200
+@@ -759,7 +759,7 @@
+   char *p = s, *q = s;
+   size_t len;
+   url_scheme_t scheme;
+-  char tmp[_POSIX_PATH_MAX];
++  char tmp[PATH_MAX];
+ 
+   scheme = url_check_scheme (s);
+ 
