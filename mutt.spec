@@ -16,7 +16,7 @@
 Summary: A text mode mail user agent
 Name: mutt
 Version: 1.5.19
-Release: 4%{?dist}
+Release: 5%{?dist}
 Epoch: 5
 # The entire source code is GPLv2+ except
 # pgpewrap.c setenv.c sha1.c wcwidth.c which are Public Domain
@@ -31,6 +31,7 @@ Patch7: mutt-1.5.19-db47.patch
 Patch8: mutt-1.5.19-realpath.patch
 Patch9: mutt-1.5.19-inodesort.patch
 Patch10: mutt-1.5.19-saslcb.patch
+Patch11: mutt-1.5.19-gnutls.patch
 Url: http://www.mutt.org/
 Requires: mailcap urlview
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -73,6 +74,7 @@ for selecting groups of messages.
 %patch8 -p1 -b .realpath
 %patch9 -p1 -b .inodesort
 %patch10 -p1 -b .saslcb
+%patch11 -p1 -b .gnutls
 
 install -p -m644 %{SOURCE1} mutt_ldap_query
 
@@ -148,6 +150,10 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man5/muttrc.*
 
 %changelog
+* Tue Jun 09 2009 Miroslav Lichvar <mlichvar@redhat.com> 5:1.5.19-5
+- fix certificate verification (CVE-2009-1390)
+- add support for gnutls INSECURE_ALGORITHM error code (#499390) 
+
 * Wed Apr 01 2009 Miroslav Lichvar <mlichvar@redhat.com> 5:1.5.19-4
 - use PATH_MAX for buffers passed to realpath (#492861)
 - unconditionally inode-sort Maildir and MH folders
