@@ -15,29 +15,26 @@
 
 Summary: A text mode mail user agent
 Name: mutt
-Version: 1.5.19
-Release: 6%{?dist}
+Version: 1.5.20
+Release: 1.20090827hg605559%{?dist}
 Epoch: 5
 # The entire source code is GPLv2+ except
 # pgpewrap.c setenv.c sha1.c wcwidth.c which are Public Domain
 License: GPLv2+ and Public Domain
 Group: Applications/Internet
-Source: ftp://ftp.mutt.org/pub/mutt/devel/mutt-%{version}.tar.gz
+# hg snapshot created from http://dev.mutt.org/hg/mutt
+Source: mutt-1.5.20-20090827hg605559.tar.bz2
+#Source: ftp://ftp.mutt.org/pub/mutt/devel/mutt-%{version}.tar.gz
 Source1: mutt_ldap_query
 Patch2: mutt-1.5.13-nodotlock.patch
 Patch3: mutt-1.5.18-muttrc.patch
 Patch4: mutt-1.5.18-manual.patch
-Patch7: mutt-1.5.19-db47.patch
-Patch8: mutt-1.5.19-realpath.patch
-Patch9: mutt-1.5.19-inodesort.patch
-Patch10: mutt-1.5.19-saslcb.patch
-Patch11: mutt-1.5.19-gnutls.patch
 Url: http://www.mutt.org/
 Requires: mailcap urlview
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
-BuildRequires: aspell /usr/sbin/sendmail
 BuildRequires: ncurses-devel
 BuildRequires: gettext
+BuildRequires: automake
 # required to build documentation
 BuildRequires: docbook-style-xsl libxslt lynx
 
@@ -65,21 +62,19 @@ regular expression searches and a powerful pattern matching language
 for selecting groups of messages.
 
 %prep
-%setup -q
+%setup -q -n mutt
+./prepare -V
 # Thou shalt use fcntl, and only fcntl
 %patch2 -p1 -b .nodl
 %patch3 -p1 -b .muttrc
 %patch4 -p1 -b .manual
-%patch7 -p1 -b .db47
-%patch8 -p1 -b .realpath
-%patch9 -p1 -b .inodesort
-%patch10 -p1 -b .saslcb
-%patch11 -p1 -b .gnutls
 
 install -p -m644 %{SOURCE1} mutt_ldap_query
 
 %build
 %configure \
+		SENDMAIL=%{_sbindir}/sendmail \
+		ISPELL=%{_bindir}/hunspell \
 %{?with_debug:	--enable-debug}\
 %{?with_pop:	--enable-pop}\
 %{?with_imap:	--enable-imap} \
@@ -114,11 +109,7 @@ cat contrib/gpg.rc >> \
 grep -5 "^color" contrib/sample.muttrc >> \
 	$RPM_BUILD_ROOT%{_sysconfdir}/Muttrc
 
-# and we use aspell
 cat >> $RPM_BUILD_ROOT%{_sysconfdir}/Muttrc <<EOF
-# use aspell
-set ispell="%{_bindir}/aspell --mode=email check"
-
 source %{_sysconfdir}/Muttrc.local
 EOF
 
@@ -147,9 +138,14 @@ rm -rf $RPM_BUILD_ROOT
 %{_bindir}/pgpewrap
 %{_bindir}/smime_keys
 %{_mandir}/man1/mutt.*
+%{_mandir}/man1/smime_keys.*
 %{_mandir}/man5/muttrc.*
 
 %changelog
+* Fri Sep 18 2009 Miroslav Lichvar <mlichvar@redhat.com> 5:1.5.20-1.20090827hg605559
+- update to post 1.5.20 hg snapshot (#515148)
+- use hunspell by default (#510358)
+
 * Sat Jul 25 2009 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 5:1.5.19-6
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_12_Mass_Rebuild
 
