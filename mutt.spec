@@ -16,14 +16,14 @@
 Summary: A text mode mail user agent
 Name: mutt
 Version: 1.5.20
-Release: 1.20090827hg605559%{?dist}
+Release: 2.20091214hg736b6a%{?dist}
 Epoch: 5
 # The entire source code is GPLv2+ except
 # pgpewrap.c setenv.c sha1.c wcwidth.c which are Public Domain
 License: GPLv2+ and Public Domain
 Group: Applications/Internet
 # hg snapshot created from http://dev.mutt.org/hg/mutt
-Source: mutt-1.5.20-20090827hg605559.tar.bz2
+Source: mutt-1.5.20-20091214hg736b6a.tar.bz2
 #Source: ftp://ftp.mutt.org/pub/mutt/devel/mutt-%{version}.tar.gz
 Source1: mutt_ldap_query
 Patch2: mutt-1.5.13-nodotlock.patch
@@ -142,6 +142,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man5/muttrc.*
 
 %changelog
+* Wed Dec 16 2009 Miroslav Lichvar <mlichvar@redhat.com> 5:1.5.20-2.20091214hg736b6a
+- update to hg snapshot 20091214hg736b6a
+
 * Fri Sep 18 2009 Miroslav Lichvar <mlichvar@redhat.com> 5:1.5.20-1.20090827hg605559
 - update to post 1.5.20 hg snapshot (#515148)
 - use hunspell by default (#510358)
