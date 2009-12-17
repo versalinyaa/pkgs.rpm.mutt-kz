@@ -16,7 +16,7 @@
 Summary: A text mode mail user agent
 Name: mutt
 Version: 1.5.20
-Release: 2.20091214hg736b6a%{?dist}
+Release: 2.20091214hg736b6a%{?dist}.1
 Epoch: 5
 # The entire source code is GPLv2+ except
 # pgpewrap.c setenv.c sha1.c wcwidth.c which are Public Domain
@@ -142,6 +142,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man5/muttrc.*
 
 %changelog
+* Thu Dec 17 2009 Deji Akingunola <dakingun@gmail.com> - 5:1.5.20-2.20091214hg736b6a.1
+- Rebuild for tokyocabinet new release soname bump
+
 * Wed Dec 16 2009 Miroslav Lichvar <mlichvar@redhat.com> 5:1.5.20-2.20091214hg736b6a
 - update to hg snapshot 20091214hg736b6a
 
