@@ -16,14 +16,14 @@
 Summary: A text mode mail user agent
 Name: mutt
 Version: 1.5.20
-Release: 2.20091214hg736b6a%{?dist}.1
+Release: 3.20100718hg1a35f0%{?dist}
 Epoch: 5
 # The entire source code is GPLv2+ except
 # pgpewrap.c setenv.c sha1.c wcwidth.c which are Public Domain
 License: GPLv2+ and Public Domain
 Group: Applications/Internet
 # hg snapshot created from http://dev.mutt.org/hg/mutt
-Source: mutt-1.5.20-20091214hg736b6a.tar.bz2
+Source: mutt-1.5.20-20100718hg1a35f0.tar.bz2
 #Source: ftp://ftp.mutt.org/pub/mutt/devel/mutt-%{version}.tar.gz
 Source1: mutt_ldap_query
 Patch2: mutt-1.5.13-nodotlock.patch
@@ -70,6 +70,12 @@ for selecting groups of messages.
 %patch4 -p1 -b .manual
 
 install -p -m644 %{SOURCE1} mutt_ldap_query
+
+%define hgreldate \\.(201[0-9])([0-1][0-9])([0-3][0-9])hg
+if echo %{release} | grep -E -q '%{hgreldate}'; then
+	echo -n 'const char *ReleaseDate = ' > reldate.h
+	echo %{release} | sed -r 's/.*%{hgreldate}.*/"\1-\2-\3";/' >> reldate.h
+fi
 
 %build
 %configure \
@@ -142,6 +148,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man5/muttrc.*
 
 %changelog
+* Fri Jul 30 2010 Miroslav Lichvar <mlichvar@redhat.com> 5:1.5.20-3.20100718hg1a35f0
+- update to hg snapshot 20100718hg1a35f0
+
 * Thu Dec 17 2009 Deji Akingunola <dakingun@gmail.com> - 5:1.5.20-2.20091214hg736b6a.1
 - Rebuild for tokyocabinet new release soname bump
 
