@@ -15,20 +15,19 @@
 
 Summary: A text mode mail user agent
 Name: mutt
-Version: 1.5.20
-Release: 3.20100718hg1a35f0%{?dist}
+Version: 1.5.21
+Release: 1%{?dist}
 Epoch: 5
 # The entire source code is GPLv2+ except
 # pgpewrap.c setenv.c sha1.c wcwidth.c which are Public Domain
 License: GPLv2+ and Public Domain
 Group: Applications/Internet
-# hg snapshot created from http://dev.mutt.org/hg/mutt
-Source: mutt-1.5.20-20100718hg1a35f0.tar.bz2
-#Source: ftp://ftp.mutt.org/pub/mutt/devel/mutt-%{version}.tar.gz
+Source: ftp://ftp.mutt.org/pub/mutt/devel/mutt-%{version}.tar.gz
 Source1: mutt_ldap_query
 Patch2: mutt-1.5.13-nodotlock.patch
 Patch3: mutt-1.5.18-muttrc.patch
 Patch4: mutt-1.5.18-manual.patch
+Patch5: mutt-1.5.21-updating.patch
 Url: http://www.mutt.org/
 Requires: mailcap urlview
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -62,12 +61,15 @@ regular expression searches and a powerful pattern matching language
 for selecting groups of messages.
 
 %prep
-%setup -q -n mutt
-./prepare -V
+%setup -q
+#./prepare -V
 # Thou shalt use fcntl, and only fcntl
 %patch2 -p1 -b .nodl
 %patch3 -p1 -b .muttrc
 %patch4 -p1 -b .manual
+%patch5 -p1 -b .updating
+
+sed -i.gpgerror 's/`$GPGME_CONFIG --libs`/"\0 -lgpg-error"/' configure
 
 install -p -m644 %{SOURCE1} mutt_ldap_query
 
@@ -148,6 +150,10 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man5/muttrc.*
 
 %changelog
+* Tue Sep 21 2010 Miroslav Lichvar <mlichvar@redhat.com> 5:1.5.21-1
+- update to 1.5.21
+- link with gpg-error when building with gpgme support (#621626)
+
 * Fri Jul 30 2010 Miroslav Lichvar <mlichvar@redhat.com> 5:1.5.20-3.20100718hg1a35f0
 - update to hg snapshot 20100718hg1a35f0
 
