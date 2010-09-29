@@ -16,7 +16,7 @@
 Summary: A text mode mail user agent
 Name: mutt
 Version: 1.5.21
-Release: 1%{?dist}
+Release: 2%{?dist}
 Epoch: 5
 # The entire source code is GPLv2+ except
 # pgpewrap.c setenv.c sha1.c wcwidth.c which are Public Domain
@@ -150,6 +150,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man5/muttrc.*
 
 %changelog
+* Wed Sep 29 2010 jkeating - 5:1.5.21-2
+- Rebuilt for gcc bug 634757
+
 * Tue Sep 21 2010 Miroslav Lichvar <mlichvar@redhat.com> 5:1.5.21-1
 - update to 1.5.21
 - link with gpg-error when building with gpgme support (#621626)
