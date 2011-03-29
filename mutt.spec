@@ -16,7 +16,7 @@
 Summary: A text mode mail user agent
 Name: mutt
 Version: 1.5.21
-Release: 3%{?dist}
+Release: 4%{?dist}
 Epoch: 5
 # The entire source code is GPLv2+ except
 # pgpewrap.c setenv.c sha1.c wcwidth.c which are Public Domain
@@ -28,6 +28,7 @@ Patch2: mutt-1.5.13-nodotlock.patch
 Patch3: mutt-1.5.18-muttrc.patch
 Patch4: mutt-1.5.18-manual.patch
 Patch5: mutt-1.5.21-updating.patch
+Patch6: mutt-1.5.21-hdrcnt.patch
 Url: http://www.mutt.org/
 Requires: mailcap urlview
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -68,6 +69,7 @@ for selecting groups of messages.
 %patch3 -p1 -b .muttrc
 %patch4 -p1 -b .manual
 %patch5 -p1 -b .updating
+%patch6 -p1 -b .hdrcnt
 
 sed -i.gpgerror 's/`$GPGME_CONFIG --libs`/"\0 -lgpg-error"/' configure
 
@@ -150,6 +152,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man5/muttrc.*
 
 %changelog
+* Tue Mar 29 2011 Honza Horak <hhorak@redhat.com> - 5:1.5.21-4
+- Fixed segmentation faults during reading message headers (rhbz#676074)
+
 * Tue Feb 08 2011 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 5:1.5.21-3
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_15_Mass_Rebuild
 
