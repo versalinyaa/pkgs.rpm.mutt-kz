@@ -16,7 +16,7 @@
 Summary: A text mode mail user agent
 Name: mutt
 Version: 1.5.21
-Release: 6%{?dist}
+Release: 7%{?dist}
 Epoch: 5
 # The entire source code is GPLv2+ except
 # pgpewrap.c setenv.c sha1.c wcwidth.c which are Public Domain
@@ -154,6 +154,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man5/muttrc.*
 
 %changelog
+* Wed Oct 26 2011 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 5:1.5.21-7
+- Rebuilt for glibc bug#747377
+
 * Wed Jun 29 2011 Honza Horak <hhorak@redhat.com> - 5:1.5.21-6
 - Fixed message indexes when skipping fetch response (mutt bug #3288)
 
