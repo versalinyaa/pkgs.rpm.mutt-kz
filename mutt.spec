@@ -16,7 +16,7 @@
 Summary: A text mode mail user agent
 Name: mutt
 Version: 1.5.21
-Release: 6%{?dist}
+Release: 7%{?dist}
 Epoch: 5
 # The entire source code is GPLv2+ except
 # pgpewrap.c setenv.c sha1.c wcwidth.c which are Public Domain
@@ -30,6 +30,7 @@ Patch4: mutt-1.5.18-manual.patch
 Patch5: mutt-1.5.21-updating.patch
 Patch6: mutt-1.5.21-hdrcnt.patch
 Patch7: mutt-1.5.21-testcert.patch
+Patch8: mutt-1.5.21-cabundle.patch
 Url: http://www.mutt.org/
 Requires: mailcap urlview
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -72,6 +73,7 @@ for selecting groups of messages.
 %patch5 -p1 -b .updating
 %patch6 -p1 -b .hdrcnt
 %patch7 -p1 -b .testcert
+%patch8 -p1 -b .cabundle
 
 sed -i.gpgerror 's/`$GPGME_CONFIG --libs`/"\0 -lgpg-error"/' configure
 
@@ -143,7 +145,7 @@ rm -rf $RPM_BUILD_ROOT
 %config(noreplace) %{_sysconfdir}/Muttrc
 %config(noreplace) %{_sysconfdir}/Muttrc.local
 %doc COPYRIGHT ChangeLog GPL NEWS README* UPDATING mutt_ldap_query
-%doc contrib/*.rc contrib/sample.* contrib/ca-bundle.crt contrib/colors.*
+%doc contrib/*.rc contrib/sample.* contrib/colors.*
 %doc doc/manual.txt doc/smime-notes.txt
 %{_bindir}/mutt
 %{_bindir}/pgpring
@@ -154,6 +156,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man5/muttrc.*
 
 %changelog
+* Thu Oct 27 2011 Honza Horak <hhorak@redhat.com> - 5:1.5.21-7
+- Removed ca-bundle.crt since it is outdated (rhbz#734379)
+
 * Wed Jun 29 2011 Honza Horak <hhorak@redhat.com> - 5:1.5.21-6
 - Fixed message indexes when skipping fetch response (mutt bug #3288)
 
