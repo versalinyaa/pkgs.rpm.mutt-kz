@@ -32,6 +32,7 @@ Patch6: mutt-1.5.21-hdrcnt.patch
 Patch7: mutt-1.5.21-testcert.patch
 Patch8: mutt-1.5.21-cabundle.patch
 Patch9: mutt-1.5.21-gpgme-1.2.0.patch
+Patch10: mutt-1.5.21-pophash.patch
 Url: http://www.mutt.org/
 Requires: mailcap urlview
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -76,6 +77,7 @@ for selecting groups of messages.
 %patch7 -p1 -b .testcert
 %patch8 -p1 -b .cabundle
 %patch9 -p1 -b .gpgme-1.2.0
+%patch10 -p1 -b .pophash
 
 sed -i.gpgerror 's/`$GPGME_CONFIG --libs`/"\0 -lgpg-error"/' configure
 
@@ -161,6 +163,8 @@ rm -rf $RPM_BUILD_ROOT
 * Thu Oct 27 2011 Honza Horak <hhorak@redhat.com> - 5:1.5.21-7
 - Removed ca-bundle.crt since it is outdated (rhbz#734379)
 - Build with gpgme support by default (rhbz#748337)
+- Fixed segmentation fault during messages removal in thread mode
+  (rhbz#674271)
 
 * Wed Jun 29 2011 Honza Horak <hhorak@redhat.com> - 5:1.5.21-6
 - Fixed message indexes when skipping fetch response (mutt bug #3288)
