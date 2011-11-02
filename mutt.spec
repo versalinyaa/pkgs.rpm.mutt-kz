@@ -16,7 +16,7 @@
 Summary: A text mode mail user agent
 Name: mutt
 Version: 1.5.21
-Release: 7%{?dist}
+Release: 8%{?dist}
 Epoch: 5
 # The entire source code is GPLv2+ except
 # pgpewrap.c setenv.c sha1.c wcwidth.c which are Public Domain
@@ -160,11 +160,14 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man5/muttrc.*
 
 %changelog
-* Thu Oct 27 2011 Honza Horak <hhorak@redhat.com> - 5:1.5.21-7
+* Wed Nov 02 2011 Honza Horak <hhorak@redhat.com> - 5:1.5.21-8
 - Removed ca-bundle.crt since it is outdated (rhbz#734379)
 - Build with gpgme support by default (rhbz#748337)
 - Fixed segmentation fault during messages removal in thread mode
   (rhbz#674271)
+
+* Wed Oct 26 2011 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 5:1.5.21-7
+- Rebuilt for glibc bug#747377
 
 * Wed Jun 29 2011 Honza Horak <hhorak@redhat.com> - 5:1.5.21-6
 - Fixed message indexes when skipping fetch response (mutt bug #3288)
