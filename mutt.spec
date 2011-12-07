@@ -16,7 +16,7 @@
 Summary: A text mode mail user agent
 Name: mutt
 Version: 1.5.21
-Release: 8%{?dist}
+Release: 9%{?dist}
 Epoch: 5
 # The entire source code is GPLv2+ except
 # pgpewrap.c setenv.c sha1.c wcwidth.c which are Public Domain
@@ -33,6 +33,7 @@ Patch7: mutt-1.5.21-testcert.patch
 Patch8: mutt-1.5.21-cabundle.patch
 Patch9: mutt-1.5.21-gpgme-1.2.0.patch
 Patch10: mutt-1.5.21-pophash.patch
+Patch11: mutt-1.5.21-certscomp.patch
 Url: http://www.mutt.org/
 Requires: mailcap urlview
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -78,6 +79,7 @@ for selecting groups of messages.
 %patch8 -p1 -b .cabundle
 %patch9 -p1 -b .gpgme-1.2.0
 %patch10 -p1 -b .pophash
+%patch11 -p1 -b .certscomp
 
 sed -i.gpgerror 's/`$GPGME_CONFIG --libs`/"\0 -lgpg-error"/' configure
 
@@ -160,6 +162,10 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man5/muttrc.*
 
 %changelog
+* Wed Dec 07 2011 Honza Horak <hhorak@redhat.com> - 5:1.5.21-9
+- Fixed a segmentation fault while parsing the certificates file
+  (rhbz#750929)
+
 * Wed Nov 02 2011 Honza Horak <hhorak@redhat.com> - 5:1.5.21-8
 - Removed ca-bundle.crt since it is outdated (rhbz#734379)
 - Build with gpgme support by default (rhbz#748337)
