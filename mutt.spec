@@ -16,7 +16,7 @@
 Summary: A text mode mail user agent
 Name: mutt
 Version: 1.5.21
-Release: 10%{?dist}
+Release: 11%{?dist}
 Epoch: 5
 # The entire source code is GPLv2+ except
 # pgpewrap.c setenv.c sha1.c wcwidth.c which are Public Domain
@@ -34,6 +34,7 @@ Patch8: mutt-1.5.21-cabundle.patch
 Patch9: mutt-1.5.21-gpgme-1.2.0.patch
 Patch10: mutt-1.5.21-pophash.patch
 Patch11: mutt-1.5.21-certscomp.patch
+Patch12: mutt-1.5.21-notation.patch
 Url: http://www.mutt.org/
 Requires: mailcap urlview
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -80,6 +81,7 @@ for selecting groups of messages.
 %patch9 -p1 -b .gpgme-1.2.0
 %patch10 -p1 -b .pophash
 %patch11 -p1 -b .certscomp
+%patch12 -p1 -b .notation
 
 sed -i.gpgerror 's/`$GPGME_CONFIG --libs`/"\0 -lgpg-error"/' configure
 
@@ -162,6 +164,11 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man5/muttrc.*
 
 %changelog
+* Wed Apr 25 2012 Honza Horak <hhorak@redhat.com> - 5:1.5.21-11
+- Patch from Petr Pisar fixing verification of PGP signatures 
+  with NULL notation
+  (rhbz#816044)
+
 * Fri Jan 13 2012 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 5:1.5.21-10
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_17_Mass_Rebuild
 
