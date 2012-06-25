@@ -36,6 +36,7 @@ Patch10: mutt-1.5.21-pophash.patch
 Patch11: mutt-1.5.21-certscomp.patch
 Patch12: mutt-1.5.21-notation.patch
 Patch13: mutt-1.5.21-syncdebug.patch
+Patch14: mutt-1.5.21-writehead.patch
 Url: http://www.mutt.org/
 Requires: mailcap urlview
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -84,6 +85,7 @@ for selecting groups of messages.
 %patch11 -p1 -b .certscomp
 %patch12 -p1 -b .notation
 %patch13 -p1 -b .syncdebug
+%patch14 -p1 -b .writehead
 
 sed -i.gpgerror 's/`$GPGME_CONFIG --libs`/"\0 -lgpg-error"/' configure
 
@@ -169,6 +171,8 @@ rm -rf $RPM_BUILD_ROOT
 * Thu May 10 2012 Honza Horak <hhorak@redhat.com> - 5:1.5.21-12
 - Fix segmentation fault while syncing mailbox
   (rhbz#691719)
+- Fix unhandled strchr output
+  (rhbz#833044)
 
 * Wed Apr 25 2012 Honza Horak <hhorak@redhat.com> - 5:1.5.21-11
 - Patch from Petr Pisar fixing verification of PGP signatures 
