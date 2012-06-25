@@ -16,7 +16,7 @@
 Summary: A text mode mail user agent
 Name: mutt
 Version: 1.5.21
-Release: 11%{?dist}
+Release: 12%{?dist}
 Epoch: 5
 # The entire source code is GPLv2+ except
 # pgpewrap.c setenv.c sha1.c wcwidth.c which are Public Domain
@@ -35,6 +35,7 @@ Patch9: mutt-1.5.21-gpgme-1.2.0.patch
 Patch10: mutt-1.5.21-pophash.patch
 Patch11: mutt-1.5.21-certscomp.patch
 Patch12: mutt-1.5.21-notation.patch
+Patch13: mutt-1.5.21-syncdebug.patch
 Url: http://www.mutt.org/
 Requires: mailcap urlview
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -82,6 +83,7 @@ for selecting groups of messages.
 %patch10 -p1 -b .pophash
 %patch11 -p1 -b .certscomp
 %patch12 -p1 -b .notation
+%patch13 -p1 -b .syncdebug
 
 sed -i.gpgerror 's/`$GPGME_CONFIG --libs`/"\0 -lgpg-error"/' configure
 
@@ -164,6 +166,10 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man5/muttrc.*
 
 %changelog
+* Thu May 10 2012 Honza Horak <hhorak@redhat.com> - 5:1.5.21-12
+- Fix segmentation fault while syncing mailbox
+  (rhbz#691719)
+
 * Wed Apr 25 2012 Honza Horak <hhorak@redhat.com> - 5:1.5.21-11
 - Patch from Petr Pisar fixing verification of PGP signatures 
   with NULL notation
