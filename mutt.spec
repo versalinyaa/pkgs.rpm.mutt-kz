@@ -16,7 +16,7 @@
 Summary: A text mode mail user agent
 Name: mutt
 Version: 1.5.21
-Release: 13%{?dist}
+Release: 14%{?dist}
 Epoch: 5
 # The entire source code is GPLv2+ except
 # pgpewrap.c setenv.c sha1.c wcwidth.c which are Public Domain
@@ -39,7 +39,6 @@ Patch13: mutt-1.5.21-syncdebug.patch
 Patch14: mutt-1.5.21-writehead.patch
 Url: http://www.mutt.org/
 Requires: mailcap urlview
-BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildRequires: ncurses-devel
 BuildRequires: gettext
 BuildRequires: automake
@@ -91,7 +90,7 @@ sed -i.gpgerror 's/`$GPGME_CONFIG --libs`/"\0 -lgpg-error"/' configure
 
 install -p -m644 %{SOURCE1} mutt_ldap_query
 
-%define hgreldate \\.(201[0-9])([0-1][0-9])([0-3][0-9])hg
+%global hgreldate \\.(201[0-9])([0-1][0-9])([0-3][0-9])hg
 if echo %{release} | grep -E -q '%{hgreldate}'; then
 	echo -n 'const char *ReleaseDate = ' > reldate.h
 	echo %{release} | sed -r 's/.*%{hgreldate}.*/"\1-\2-\3";/' >> reldate.h
@@ -125,7 +124,6 @@ fi
 make %{?_smp_mflags}
 
 %install
-rm -rf $RPM_BUILD_ROOT
 make install DESTDIR=$RPM_BUILD_ROOT
 
 # we like GPG here
@@ -146,14 +144,11 @@ rm -f $RPM_BUILD_ROOT%{_sysconfdir}/{*.dist,mime.types}
 rm -f $RPM_BUILD_ROOT%{_bindir}/{flea,muttbug}
 rm -f $RPM_BUILD_ROOT%{_mandir}/man1/{flea,muttbug,mutt_dotlock}.1*
 rm -f $RPM_BUILD_ROOT%{_mandir}/man5/{mbox,mmdf}.5*
+rm -f $RPM_BUILD_ROOT%{_docdir}/%{name}-%{version}/INSTALL
 
 %find_lang %{name}
 
-%clean
-rm -rf $RPM_BUILD_ROOT
-
 %files -f %{name}.lang
-%defattr(-,root,root)
 %config(noreplace) %{_sysconfdir}/Muttrc
 %config(noreplace) %{_sysconfdir}/Muttrc.local
 %doc COPYRIGHT ChangeLog GPL NEWS README* UPDATING mutt_ldap_query
@@ -168,6 +163,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man5/muttrc.*
 
 %changelog
+* Mon Sep 10 2012 Honza Horak <hhorak@redhat.com> - 5:1.5.21-14
+- Minor spec file changes
+
 * Fri Jul 27 2012 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 5:1.5.21-13
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_18_Mass_Rebuild
 
