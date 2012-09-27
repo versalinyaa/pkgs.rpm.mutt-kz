@@ -16,7 +16,7 @@
 Summary: A text mode mail user agent
 Name: mutt
 Version: 1.5.21
-Release: 14%{?dist}
+Release: 15%{?dist}
 Epoch: 5
 # The entire source code is GPLv2+ except
 # pgpewrap.c setenv.c sha1.c wcwidth.c which are Public Domain
@@ -37,6 +37,7 @@ Patch11: mutt-1.5.21-certscomp.patch
 Patch12: mutt-1.5.21-notation.patch
 Patch13: mutt-1.5.21-syncdebug.patch
 Patch14: mutt-1.5.21-writehead.patch
+Patch15: mutt-1.5.21-tmpdir.patch
 Url: http://www.mutt.org/
 Requires: mailcap urlview
 BuildRequires: ncurses-devel
@@ -85,6 +86,7 @@ for selecting groups of messages.
 %patch12 -p1 -b .notation
 %patch13 -p1 -b .syncdebug
 %patch14 -p1 -b .writehead
+%patch15 -p1 -b .tmpdir
 
 sed -i.gpgerror 's/`$GPGME_CONFIG --libs`/"\0 -lgpg-error"/' configure
 
@@ -163,6 +165,10 @@ rm -f $RPM_BUILD_ROOT%{_docdir}/%{name}-%{version}/INSTALL
 %{_mandir}/man5/muttrc.*
 
 %changelog
+* Thu Sep 27 2012 Honza Horak <hhorak@redhat.com> - 5:1.5.21-15
+- Change default tmpdir from /tmp to /var/tmp
+  Resolves: #858264
+
 * Mon Sep 10 2012 Honza Horak <hhorak@redhat.com> - 5:1.5.21-14
 - Minor spec file changes
 
