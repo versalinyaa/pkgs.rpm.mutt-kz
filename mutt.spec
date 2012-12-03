@@ -16,7 +16,7 @@
 Summary: A text mode mail user agent
 Name: mutt
 Version: 1.5.21
-Release: 15%{?dist}
+Release: 16%{?dist}
 Epoch: 5
 # The entire source code is GPLv2+ except
 # pgpewrap.c setenv.c sha1.c wcwidth.c which are Public Domain
@@ -125,6 +125,9 @@ fi
 
 make %{?_smp_mflags}
 
+# remove unique id in manual.html because multilib conflicts
+sed -i -e 's/<a id="id[a-z0-9]\+">/<a id="id">/g' doc/manual.html
+
 %install
 make install DESTDIR=$RPM_BUILD_ROOT
 
@@ -165,6 +168,9 @@ rm -f $RPM_BUILD_ROOT%{_docdir}/%{name}-%{version}/INSTALL
 %{_mandir}/man5/muttrc.*
 
 %changelog
+* Mon Dec 03 2012 Honza Horak <hhorak@redhat.com> - 5:1.5.21-16
+- remove unique id in manual.html because multilib conflict
+
 * Thu Sep 27 2012 Honza Horak <hhorak@redhat.com> - 5:1.5.21-15
 - Change default tmpdir from /tmp to /var/tmp
   Resolves: #858264
