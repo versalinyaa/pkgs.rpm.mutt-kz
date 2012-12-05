@@ -151,6 +151,9 @@ rm -f $RPM_BUILD_ROOT%{_mandir}/man1/{flea,muttbug,mutt_dotlock}.1*
 rm -f $RPM_BUILD_ROOT%{_mandir}/man5/{mbox,mmdf}.5*
 rm -f $RPM_BUILD_ROOT%{_docdir}/%{name}-%{version}/INSTALL
 
+# provide muttrc.local(5): the same as muttrc(5)
+ln -sf ./muttrc.5 $RPM_BUILD_ROOT%{_mandir}/man5/muttrc.local.5
+
 %find_lang %{name}
 
 %files -f %{name}.lang
@@ -170,6 +173,7 @@ rm -f $RPM_BUILD_ROOT%{_docdir}/%{name}-%{version}/INSTALL
 %changelog
 * Mon Dec 03 2012 Honza Horak <hhorak@redhat.com> - 5:1.5.21-16
 - remove unique id in manual.html because multilib conflict
+- provide muttrc.local(5)
 
 * Thu Sep 27 2012 Honza Horak <hhorak@redhat.com> - 5:1.5.21-15
 - Change default tmpdir from /tmp to /var/tmp
