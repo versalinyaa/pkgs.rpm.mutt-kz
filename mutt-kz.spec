@@ -14,33 +14,27 @@
 %bcond_without gpgme
 
 Summary: A text mode mail user agent
-Name: mutt
-Version: 1.5.21
-Release: 18%{?dist}
-Epoch: 5
+Name: mutt-kz
+Version: 2013.03.16.git7870815
+Release: 0chadv1%{?dist}
 # The entire source code is GPLv2+ except
 # pgpewrap.c setenv.c sha1.c wcwidth.c which are Public Domain
 License: GPLv2+ and Public Domain
 Group: Applications/Internet
-Source: ftp://ftp.mutt.org/pub/mutt/devel/mutt-%{version}.tar.gz
+Source: %{name}-%{version}.tar.xz
 Source1: mutt_ldap_query
 Patch2: mutt-1.5.13-nodotlock.patch
 Patch3: mutt-1.5.18-muttrc.patch
 Patch4: mutt-1.5.18-manual.patch
-Patch5: mutt-1.5.21-updating.patch
-Patch6: mutt-1.5.21-hdrcnt.patch
-Patch7: mutt-1.5.21-testcert.patch
 Patch8: mutt-1.5.21-cabundle.patch
 Patch9: mutt-1.5.21-gpgme-1.2.0.patch
-Patch10: mutt-1.5.21-pophash.patch
 Patch11: mutt-1.5.21-certscomp.patch
-Patch12: mutt-1.5.21-notation.patch
 Patch13: mutt-1.5.21-syncdebug.patch
-Patch14: mutt-1.5.21-writehead.patch
 Patch15: mutt-1.5.21-tmpdir.patch
-Patch16: mutt-1.5.21-verpeers.patch
-Url: http://www.mutt.org/
-Requires: mailcap urlview
+Url: https://github.com/karelzak/mutt-kz/wiki
+Conflicts: mutt
+Requires: mailcap notmuch urlview
+BuildRequires: notmuch-devel
 BuildRequires: ncurses-devel
 BuildRequires: gettext
 BuildRequires: automake
@@ -64,6 +58,8 @@ BuildRequires: docbook-style-xsl libxslt lynx
 %{?with_gpgme:BuildRequires: gpgme-devel}
 
 %description
+This is a fork of Mutt with support for notmuch, a mail indexer.
+
 Mutt is a small but very powerful text-based MIME mail client.  Mutt
 is highly configurable, and is well suited to the mail power user with
 advanced features like key bindings, keyboard macros, mail threading,
@@ -72,23 +68,17 @@ for selecting groups of messages.
 
 %prep
 %setup -q
+autoreconf --install
 #./prepare -V
 # Thou shalt use fcntl, and only fcntl
 %patch2 -p1 -b .nodl
 %patch3 -p1 -b .muttrc
 %patch4 -p1 -b .manual
-%patch5 -p1 -b .updating
-%patch6 -p1 -b .hdrcnt
-%patch7 -p1 -b .testcert
 %patch8 -p1 -b .cabundle
 %patch9 -p1 -b .gpgme-1.2.0
-%patch10 -p1 -b .pophash
 %patch11 -p1 -b .certscomp
-%patch12 -p1 -b .notation
 %patch13 -p1 -b .syncdebug
-%patch14 -p1 -b .writehead
 %patch15 -p1 -b .tmpdir
-%patch16 -p1 -b .verpeers
 
 sed -i.gpgerror 's/`$GPGME_CONFIG --libs`/"\0 -lgpg-error"/' configure
 
@@ -104,6 +94,7 @@ fi
 %configure \
 		SENDMAIL=%{_sbindir}/sendmail \
 		ISPELL=%{_bindir}/hunspell \
+		--enable-notmuch \
 %{?with_debug:	--enable-debug}\
 %{?with_pop:	--enable-pop}\
 %{?with_imap:	--enable-imap} \
@@ -156,9 +147,9 @@ rm -f $RPM_BUILD_ROOT%{_docdir}/%{name}-%{version}/INSTALL
 # provide muttrc.local(5): the same as muttrc(5)
 ln -sf ./muttrc.5 $RPM_BUILD_ROOT%{_mandir}/man5/muttrc.local.5
 
-%find_lang %{name}
+%find_lang mutt
 
-%files -f %{name}.lang
+%files -f mutt.lang
 %config(noreplace) %{_sysconfdir}/Muttrc
 %config(noreplace) %{_sysconfdir}/Muttrc.local
 %doc COPYRIGHT ChangeLog GPL NEWS README* UPDATING mutt_ldap_query
@@ -173,6 +164,9 @@ ln -sf ./muttrc.5 $RPM_BUILD_ROOT%{_mandir}/man5/muttrc.local.5
 %{_mandir}/man5/muttrc.*
 
 %changelog
+* Sat Mar 13 2013 Chad Versace <chad@chad-versace.us> * * - 2013.03.16.git7870815-0chadv1
+- Convert mutt.spec to mutt-kz.spec.
+
 * Mon Mar  4 2013 Honza Horak <hhorak@redhat.com> - 5:1.5.21-18
 - gnutls_certificate_verify_peers became deprecated, using
   a recent alternative
